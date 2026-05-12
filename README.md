@@ -86,8 +86,24 @@
 Run this single command on your Ubuntu / Debian server (as root):
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/phoseinq/3x-ui/main/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/phoseinq/3x-ui-monitor/main/install.sh | sudo bash
 ```
+
+If your server needs a SOCKS5 proxy to reach the internet:
+
+```bash
+# inline flag
+curl -fsSL https://raw.githubusercontent.com/phoseinq/3x-ui-monitor/main/install.sh | sudo bash -s -- --proxy socks5://1.2.3.4:1080
+
+# with username and password
+curl -fsSL https://raw.githubusercontent.com/phoseinq/3x-ui-monitor/main/install.sh | sudo bash -s -- --proxy socks5://user:pass@1.2.3.4:1080
+
+# or via environment variable
+export PROXY=socks5://1.2.3.4:1080
+curl -fsSL https://raw.githubusercontent.com/phoseinq/3x-ui-monitor/main/install.sh | sudo bash
+```
+
+The proxy is used for both file downloads (`curl`) and Python package installation (`pip`).
 
 The script will:
 1. Install `flask` and `requests` (via pip, falls back to apt if needed)
@@ -239,8 +255,24 @@ MIT — see [LICENSE](LICENSE).
 این یک دستور را روی سرور Ubuntu یا Debian خود (به عنوان root) اجرا کنید:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/phoseinq/3x-ui/main/install.sh | sudo bash
+curl -fsSL https://raw.githubusercontent.com/phoseinq/3x-ui-monitor/main/install.sh | sudo bash
 ```
+
+اگر سرور شما برای دسترسی به اینترنت نیاز به پروکسی دارد:
+
+```bash
+# با پرچم مستقیم
+curl -fsSL https://raw.githubusercontent.com/phoseinq/3x-ui-monitor/main/install.sh | sudo bash -s -- --proxy socks5://1.2.3.4:1080
+
+# با نام کاربری و رمز عبور
+curl -fsSL https://raw.githubusercontent.com/phoseinq/3x-ui-monitor/main/install.sh | sudo bash -s -- --proxy socks5://user:pass@1.2.3.4:1080
+
+# از طریق متغیر محیطی
+export PROXY=socks5://1.2.3.4:1080
+curl -fsSL https://raw.githubusercontent.com/phoseinq/3x-ui-monitor/main/install.sh | sudo bash
+```
+
+پروکسی هم برای دانلود فایل‌ها (`curl`) و هم برای نصب بسته‌های پایتون (`pip`) استفاده می‌شود.
 
 این دستور به ترتیب:
 ۱. بسته‌های `flask` و `requests` را نصب می‌کند (از pip، در صورت نیاز از apt)
