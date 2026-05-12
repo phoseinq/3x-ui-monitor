@@ -16,7 +16,7 @@
 set -euo pipefail
 
 REPO_RAW="https://raw.githubusercontent.com/phoseinq/3x-ui-monitor/main"
-DIR="/opt/xui-monitor"
+DIR="/opt/boyitor"
 
 # ── colours ───────────────────────────────────────────────────
 R=$'\033[0;31m'; G=$'\033[0;32m'; B=$'\033[0;34m'
@@ -96,15 +96,15 @@ _dl() {
 
 _dl dashboard.py
 _dl monitor.py
-_dl xui-mon.py
-chmod +x "${DIR}/xui-mon.py"
-ln -sf "${DIR}/xui-mon.py" /usr/local/bin/xui-mon
+_dl boy.py
+chmod +x "${DIR}/boy.py"
+ln -sf "${DIR}/boy.py" /usr/local/bin/boy
 
-ok "Files ready  (xui-mon available system-wide)"
+ok "Files ready  (boy available system-wide)"
 
 # ── 3. Secret key ─────────────────────────────────────────────
 SECRET=$(python3 -c "import secrets; print(secrets.token_hex(32))")
-sed -i "s/xui-monitor-2026-change-me/${SECRET}/" "${DIR}/dashboard.py"
+sed -i "s/boyitor-2026-change-me/${SECRET}/" "${DIR}/dashboard.py"
 ok "Secret key generated"
 
 # ── 4. Systemd services ───────────────────────────────────────
@@ -129,7 +129,7 @@ User=root
 WantedBy=multi-user.target
 UNIT
 
-cat > /etc/systemd/system/xui-monitor.service << UNIT
+cat > /etc/systemd/system/boyitor.service << UNIT
 [Unit]
 Description=3x-ui Traffic Monitor
 After=network.target xui-dashboard.service
@@ -146,8 +146,8 @@ WantedBy=multi-user.target
 UNIT
 
 systemctl daemon-reload
-systemctl enable xui-dashboard xui-monitor -q
-systemctl restart xui-dashboard xui-monitor
+systemctl enable xui-dashboard boyitor -q
+systemctl restart xui-dashboard boyitor
 ok "Services started"
 
 # ── 5. Verify ─────────────────────────────────────────────────
@@ -175,16 +175,16 @@ echo -e "  ${C}URL:${N}       http://${IP}:5000"
 echo -e "  ${C}First run:${N} open the URL and register your admin account"
 echo -e "  ${C}Settings:${N}  enter your 3x-ui panel URL, username and password"
 echo
-echo -e "  ${Y}xui-mon CLI:${N}"
-echo -e "    xui-mon status"
-echo -e "    xui-mon restart"
-echo -e "    xui-mon user <username>      change admin username"
-echo -e "    xui-mon pass <password>      change admin password"
-echo -e "    xui-mon port <number>        change dashboard port"
-echo -e "    xui-mon https on --cert /path/cert.pem --key /path/key.pem"
-echo -e "    xui-mon remove               uninstall services"
+echo -e "  ${Y}boy CLI:${N}"
+echo -e "    boy status"
+echo -e "    boy restart"
+echo -e "    boy user <username>      change admin username"
+echo -e "    boy pass <password>      change admin password"
+echo -e "    boy port <number>        change dashboard port"
+echo -e "    boy https on --cert /path/cert.pem --key /path/key.pem"
+echo -e "    boy remove               uninstall services"
 echo
 echo -e "  ${Y}Logs:${N}"
 echo -e "    journalctl -u xui-dashboard -f"
-echo -e "    journalctl -u xui-monitor   -f"
+echo -e "    journalctl -u boyitor   -f"
 echo

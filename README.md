@@ -51,7 +51,7 @@
 |---|---|
 | `curl` | Downloads and runs the installer |
 | `pip3` | Installs Python packages (`flask`, `requests`, `tzdata`) |
-| `systemctl` | Manages `xui-dashboard` and `xui-monitor` services |
+| `systemctl` | Manages `xui-dashboard` and `boyitor` services |
 | `journalctl` | Views live service logs |
 
 **Third-party packages** (installed automatically by the installer):
@@ -107,9 +107,9 @@ The proxy is used for both file downloads (`curl`) and Python package installati
 
 The script will:
 1. Install `flask` and `requests` (via pip, falls back to apt if needed)
-2. Download `dashboard.py` and `monitor.py` to `/opt/xui-monitor/`
+2. Download `dashboard.py` and `monitor.py` to `/opt/boyitor/`
 3. Generate a random secret key
-4. Create and start two systemd services: `xui-dashboard` and `xui-monitor`
+4. Create and start two systemd services: `xui-dashboard` and `boyitor`
 5. Print your dashboard URL
 
 ---
@@ -143,33 +143,43 @@ The script will:
 | Service | Role |
 |---|---|
 | `xui-dashboard` | Flask web UI — listens on port 5000 |
-| `xui-monitor` | Background poller — checks the panel every N seconds, restarts Xray on quota breach |
+| `boyitor` | Background poller — checks the panel every N seconds, restarts Xray on quota breach |
 
 Both services start on boot and restart automatically on failure.
 
 ---
 
-### xui-mon CLI
+### boy CLI
 
-The installer adds `xui-mon` — a management CLI for controlling the dashboard from the terminal.
+The installer adds `boy` — a management CLI for controlling the dashboard from the terminal.
+
+Run without arguments to open the **interactive menu**:
 
 ```bash
-xui-mon status               # show service status + current settings
-xui-mon start                # start both services
-xui-mon stop                 # stop both services
-xui-mon restart              # restart both services
-xui-mon user <new-username>  # change admin username (no restart needed)
-xui-mon pass <new-password>  # change admin password (no restart needed)
-xui-mon port <number>        # change dashboard port (restarts dashboard)
-xui-mon https on --cert /path/fullchain.pem --key /path/privkey.pem   # enable HTTPS
-xui-mon https off            # disable HTTPS (back to HTTP)
-xui-mon remove               # stop, disable, and remove both services (data kept)
+sudo boy
+```
+
+Or pass a command directly:
+
+```bash
+boy status               # service status + current settings
+boy start                # start both services
+boy stop                 # stop both services
+boy restart              # restart both services
+boy user <new-username>  # change admin username (no restart needed)
+boy pass                 # change admin password — prompts securely (no echo)
+boy port <number>        # change dashboard port (restarts dashboard)
+boy https on --cert /path/fullchain.pem --key /path/privkey.pem
+boy https off            # disable HTTPS (back to HTTP)
+boy remove               # stop, disable, and remove services (data kept)
+boy help [command]       # show help, or detailed help for a command
 ```
 
 **Notes:**
-- Run as root (`sudo xui-mon ...`)
-- `xui-mon remove` asks for confirmation before removing services
-- `xui-mon https on` will prompt for cert/key paths if not supplied as flags
+- Run as root (`sudo boy ...`)
+- `boy remove` asks for confirmation before removing anything
+- `boy https on` will prompt for cert/key paths if not passed as flags
+- `boy pass` without an argument prompts for the password without showing it on screen
 
 ---
 
@@ -177,7 +187,7 @@ xui-mon remove               # stop, disable, and remove both services (data kep
 
 ```bash
 journalctl -u xui-dashboard -f   # live dashboard logs
-journalctl -u xui-monitor -f     # live monitor logs
+journalctl -u boyitor -f     # live monitor logs
 ```
 
 ---
@@ -220,7 +230,7 @@ MIT — see [LICENSE](LICENSE).
 |---|---|
 | `curl` | دانلود و اجرای نصب‌کننده |
 | `pip3` | نصب بسته‌های پایتون (`flask`، `requests`، `tzdata`) |
-| `systemctl` | مدیریت سرویس‌های `xui-dashboard` و `xui-monitor` |
+| `systemctl` | مدیریت سرویس‌های `xui-dashboard` و `boyitor` |
 | `journalctl` | مشاهده لاگ زنده سرویس‌ها |
 
 **بسته‌های خارجی** (توسط نصب‌کننده به‌طور خودکار نصب می‌شوند):
@@ -276,9 +286,9 @@ curl -fsSL https://raw.githubusercontent.com/phoseinq/3x-ui-monitor/main/install
 
 این دستور به ترتیب:
 ۱. بسته‌های `flask` و `requests` را نصب می‌کند (از pip، در صورت نیاز از apt)
-۲. فایل‌های برنامه را در `/opt/xui-monitor/` دانلود می‌کند
+۲. فایل‌های برنامه را در `/opt/boyitor/` دانلود می‌کند
 ۳. یک کلید امنیتی تصادفی تولید می‌کند
-۴. دو سرویس سیستمی `xui-dashboard` و `xui-monitor` را می‌سازد و راه‌اندازی می‌کند
+۴. دو سرویس سیستمی `xui-dashboard` و `boyitor` را می‌سازد و راه‌اندازی می‌کند
 ۵. آدرس داشبورد را نمایش می‌دهد
 
 ---
@@ -312,33 +322,43 @@ curl -fsSL https://raw.githubusercontent.com/phoseinq/3x-ui-monitor/main/install
 | سرویس | نقش |
 |---|---|
 | `xui-dashboard` | رابط تحت‌وب — روی درگاه ۵۰۰۰ اجرا می‌شود |
-| `xui-monitor` | پردازش پس‌زمینه — هر چند ثانیه پنل را بررسی می‌کند و در صورت تجاوز از کوتا، Xray را مجدداً راه‌اندازی می‌کند |
+| `boyitor` | پردازش پس‌زمینه — هر چند ثانیه پنل را بررسی می‌کند و در صورت تجاوز از کوتا، Xray را مجدداً راه‌اندازی می‌کند |
 
 هر دو سرویس با راه‌اندازی سیستم شروع می‌شوند و در صورت خطا به‌طور خودکار مجدداً راه‌اندازی می‌شوند.
 
 ---
 
-### ابزار مدیریتی xui-mon
+### ابزار مدیریتی boy
 
-نصب‌کننده دستور `xui-mon` را در اختیار می‌گذارد — یک ابزار مدیریتی برای کنترل داشبورد از طریق خط فرمان.
+نصب‌کننده دستور `boy` را در اختیار می‌گذارد — یک ابزار مدیریتی برای کنترل داشبورد از طریق خط فرمان.
+
+اجرا بدون آرگومان **منوی تعاملی** را باز می‌کند:
 
 ```bash
-xui-mon status               # نمایش وضعیت سرویس‌ها و تنظیمات جاری
-xui-mon start                # راه‌اندازی هر دو سرویس
-xui-mon stop                 # توقف هر دو سرویس
-xui-mon restart              # راه‌اندازی مجدد هر دو سرویس
-xui-mon user <نام-کاربری>    # تغییر نام کاربری مدیر (نیاز به راه‌اندازی مجدد ندارد)
-xui-mon pass <رمز-عبور>      # تغییر رمز عبور مدیر (نیاز به راه‌اندازی مجدد ندارد)
-xui-mon port <عدد>           # تغییر درگاه داشبورد (داشبورد مجدداً راه‌اندازی می‌شود)
-xui-mon https on --cert /path/fullchain.pem --key /path/privkey.pem   # فعال‌سازی HTTPS
-xui-mon https off            # غیرفعال‌سازی HTTPS (بازگشت به HTTP)
-xui-mon remove               # توقف، غیرفعال‌سازی و حذف سرویس‌ها (داده‌ها حفظ می‌شوند)
+sudo boy
+```
+
+یا می‌توانید دستور را مستقیماً بدهید:
+
+```bash
+boy status               # نمایش وضعیت سرویس‌ها و تنظیمات جاری
+boy start                # راه‌اندازی هر دو سرویس
+boy stop                 # توقف هر دو سرویس
+boy restart              # راه‌اندازی مجدد هر دو سرویس
+boy user <نام-کاربری>    # تغییر نام کاربری مدیر (نیاز به راه‌اندازی مجدد ندارد)
+boy pass                 # تغییر رمز عبور — بدون نمایش روی صفحه
+boy port <عدد>           # تغییر درگاه داشبورد (داشبورد مجدداً راه‌اندازی می‌شود)
+boy https on --cert /path/fullchain.pem --key /path/privkey.pem
+boy https off            # غیرفعال‌سازی HTTPS (بازگشت به HTTP)
+boy remove               # توقف، غیرفعال‌سازی و حذف سرویس‌ها (داده‌ها حفظ می‌شوند)
+boy help [دستور]         # راهنما، یا راهنمای تفصیلی برای یک دستور
 ```
 
 **نکات:**
-- به عنوان root اجرا کنید (`sudo xui-mon ...`)
-- دستور `xui-mon remove` قبل از حذف سرویس‌ها تأییدیه می‌خواهد
-- دستور `xui-mon https on` در صورت عدم ارائه مسیر گواهینامه، آن را از شما می‌پرسد
+- به عنوان root اجرا کنید (`sudo boy ...`)
+- دستور `boy remove` قبل از حذف تأییدیه می‌خواهد
+- دستور `boy https on` در صورت عدم ارائه مسیر گواهینامه، آن را می‌پرسد
+- دستور `boy pass` بدون آرگومان، رمز را بدون نمایش روی صفحه می‌پرسد
 
 ---
 
@@ -346,7 +366,7 @@ xui-mon remove               # توقف، غیرفعال‌سازی و حذف س
 
 ```bash
 journalctl -u xui-dashboard -f   # لاگ زنده داشبورد
-journalctl -u xui-monitor -f     # لاگ زنده مانیتور
+journalctl -u boyitor -f     # لاگ زنده مانیتور
 ```
 
 ---
