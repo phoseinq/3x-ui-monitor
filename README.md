@@ -43,16 +43,32 @@
 
 ---
 
-### Requirements
+### Requirements & libraries
 
-| Requirement | Notes |
+**Third-party packages** (installed automatically by the installer):
+
+| Package | Version | Purpose |
+|---|---|---|
+| `flask` | latest | Web framework — serves the dashboard UI and API routes |
+| `requests` | latest | HTTP client — communicates with the 3x-ui panel API |
+| `tzdata` | latest | Timezone database — needed for `zoneinfo` on some older Linux systems |
+
+**Standard library** (built into Python, no install needed):
+
+| Module | Purpose |
 |---|---|
-| Python 3.8+ | Must be installed on the server (`python3 --version`) |
-| `flask` | Web framework — installed automatically by the installer |
-| `requests` | HTTP client for panel API — installed automatically |
-| `tzdata` | Timezone data — installed automatically (needed on some older systems) |
+| `sqlite3` | Local database for traffic snapshots and settings |
+| `hashlib` | PBKDF2 password hashing for admin accounts |
+| `threading` | Background threads for monitor and auto-cleanup |
+| `zoneinfo` | Timezone-aware datetime handling (Python 3.9+) |
+| `logging` | Structured log output for the monitor service |
+| `json` | Serialising panel API responses and session cookies |
+| `pathlib` | File path handling |
+| `datetime` | Timestamp formatting |
+| `collections` | `defaultdict` for traffic aggregation |
+| `time`, `os`, `functools` | Utilities |
 
-> The installer handles all Python packages. You only need `python3` pre-installed.
+> The installer handles all third-party packages. You only need `python3` (3.9+) pre-installed.
 
 ---
 
@@ -159,16 +175,32 @@ MIT — see [LICENSE](LICENSE).
 
 ---
 
-### پیش‌نیازها
+### پیش‌نیازها و کتابخانه‌ها
 
-| پیش‌نیاز | توضیح |
+**بسته‌های خارجی** (توسط نصب‌کننده به‌طور خودکار نصب می‌شوند):
+
+| بسته | کاربرد |
 |---|---|
-| Python 3.8 یا بالاتر | باید از پیش روی سرور نصب باشد (`python3 --version`) |
-| `flask` | چارچوب وب — توسط نصب‌کننده به‌طور خودکار نصب می‌شود |
-| `requests` | کتابخانه HTTP برای ارتباط با API پنل — به‌طور خودکار نصب می‌شود |
-| `tzdata` | داده‌های منطقه زمانی — به‌طور خودکار نصب می‌شود (برای برخی سیستم‌های قدیمی‌تر) |
+| `flask` | چارچوب وب — رابط کاربری داشبورد و مسیرهای API را ارائه می‌دهد |
+| `requests` | ارتباط با API پنل 3x-ui |
+| `tzdata` | پایگاه داده منطقه‌های زمانی — برای برخی سیستم‌های قدیمی‌تر لینوکس |
 
-> نصب‌کننده تمام بسته‌های پایتون را خودکار نصب می‌کند. فقط `python3` باید از پیش روی سرور موجود باشد.
+**کتابخانه‌های استاندارد** (داخل پایتون، نیاز به نصب ندارند):
+
+| ماژول | کاربرد |
+|---|---|
+| `sqlite3` | پایگاه داده محلی برای ذخیره داده‌های ترافیک و تنظیمات |
+| `hashlib` | رمزنگاری PBKDF2 برای رمز عبور حساب‌های مدیریتی |
+| `threading` | اجرای موازی مانیتور و پاک‌سازی خودکار در پس‌زمینه |
+| `zoneinfo` | مدیریت زمان بر اساس منطقه زمانی (پایتون ۳.۹ به بالا) |
+| `logging` | ثبت رویدادهای سرویس مانیتور |
+| `json` | پردازش پاسخ‌های API پنل و ذخیره نشست |
+| `pathlib` | مدیریت مسیر فایل‌ها |
+| `datetime` | قالب‌بندی زمان‌ها |
+| `collections` | `defaultdict` برای جمع‌بندی ترافیک |
+| `time`, `os`, `functools` | ابزارهای کمکی |
+
+> نصب‌کننده تمام بسته‌های خارجی را خودکار نصب می‌کند. فقط `python3` نسخه ۳.۹ یا بالاتر باید از پیش روی سرور موجود باشد.
 
 ---
 
