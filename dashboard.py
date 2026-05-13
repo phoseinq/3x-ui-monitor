@@ -772,6 +772,9 @@ def fetch_panel_candidates(old_days: int = 30):
                 "inbound_id":   inbound_id,
                 "client_id":    cid,
                 "email":        email,
+                "subscription": c.get("subId", ""),
+                "tg_id":        c.get("tgId", ""),
+                "comment":      c.get("comment", ""),
                 "quota_gb":     round(quota / 1024**3, 2) if quota else 0,
                 "up_gb":        round(up   / 1024**3, 2),
                 "down_gb":      round(down / 1024**3, 2),
@@ -802,6 +805,7 @@ def _backup_deleted_users(users: list[dict]) -> str:
     path = f"{BACKUP_DIR}/{ts}.csv"
     fields = [
         "email", "client_id", "inbound_id",
+        "subscription", "tg_id", "comment",
         "quota_gb", "up_gb", "down_gb", "total_gb", "pct",
         "expiry_date", "expired_days", "expired", "over_quota",
     ]
