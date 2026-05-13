@@ -522,12 +522,12 @@ def _cpu_reader():
 threading.Thread(target=_cpu_reader, daemon=True, name="cpu-reader").start()
 
 def _read_cpu_pct() -> float:
-    """5-second rolling average â€” used by /api/live/stats."""
+    """5-second rolling average — used by /api/live/stats."""
     recent = list(_cpu_buf)[-5:]
     return round(sum(recent) / len(recent), 1) if recent else 0.0
 
 def _get_cpu_snapshot() -> float:
-    """Average of all buffered readings â€” used by server snapshot writer."""
+    """Average of all buffered readings — used by server snapshot writer."""
     buf = list(_cpu_buf)
     return round(sum(buf) / len(buf), 1) if buf else 0.0
 
@@ -725,7 +725,7 @@ def _panel_api(method: str, path: str, **kwargs):
 def fetch_panel_candidates(old_days: int = 30):
     """
     Return (list_of_candidates, error_str).
-    Three categories â€” a user can match more than one:
+    Three categories — a user can match more than one:
       expired  : expiryTime has passed, within the last 90 days
       over_quota: totalGB limit exceeded (no time cap)
       aged     : expired more than old_days ago (subset of expired)
@@ -827,7 +827,6 @@ BASE_STYLE = r"""
 body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;min-height:100vh}
 a{color:inherit;text-decoration:none}
 
-/* â”€â”€ Sidebar â”€â”€ */
 .sb-backdrop{position:fixed;inset:0;z-index:299;
   background:rgba(0,0,0,0);backdrop-filter:blur(0px);
   pointer-events:none;transition:background .3s ease,backdrop-filter .3s ease}
@@ -860,7 +859,6 @@ button.sb-link{width:100%;background:none;border:none;cursor:pointer;text-align:
   padding:7px 0;border-top:1px solid var(--border);transition:color .12s}
 .sb-logout:hover{color:#f04a4a}
 
-/* â”€â”€ Topbar â”€â”€ */
 .hamburger{background:none;border:1px solid transparent;cursor:pointer;
   color:var(--muted);padding:6px 7px;border-radius:7px;
   display:flex;align-items:center;transition:all .15s;flex-shrink:0}
@@ -885,7 +883,6 @@ button.sb-link{width:100%;background:none;border:none;cursor:pointer;text-align:
   color:var(--muted);background:var(--card);border:1px solid var(--border);
   border-radius:99px;padding:3px 9px;white-space:nowrap}
 
-/* â”€â”€ Buttons / chips â”€â”€ */
 .btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:8px;
   border:1px solid var(--border);background:var(--card);color:var(--muted);
   font-size:.77rem;cursor:pointer;transition:all .2s cubic-bezier(.4,0,.2,1);white-space:nowrap}
@@ -908,10 +905,8 @@ button.sb-link{width:100%;background:none;border:none;cursor:pointer;text-align:
 .chip:hover:not(.active){border-color:var(--blue);color:var(--blue);transform:translateY(-1px)}
 .chip:active{transform:translateY(0)}
 
-/* â”€â”€ Layout â”€â”€ */
 .wrap{max-width:1600px;margin:0 auto;padding:20px 22px}
 
-/* â”€â”€ KPI cards â”€â”€ */
 .kpi-row{display:grid;grid-template-columns:repeat(6,minmax(0,1fr)) minmax(0,2fr);gap:10px;margin-bottom:22px}
 .kpi-row .kpi:last-child .val{font-size:.95rem}
 .kpi{min-width:0;background:var(--card);border:1px solid var(--border);border-radius:12px;
@@ -927,13 +922,11 @@ button.sb-link{width:100%;background:none;border:none;cursor:pointer;text-align:
   text-transform:uppercase;letter-spacing:.5px;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* â”€â”€ Section divider â”€â”€ */
 .sec{display:flex;align-items:center;gap:10px;margin:22px 0 11px}
 .sec-title{font-size:.7rem;font-weight:600;text-transform:uppercase;
   letter-spacing:.8px;color:var(--muted);white-space:nowrap}
 .sec-line{flex:1;height:1px;background:var(--border)}
 
-/* â”€â”€ Toolbar â”€â”€ */
 .toolbar{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:11px}
 .search-wrap{position:relative}
 .search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);
@@ -946,7 +939,6 @@ button.sb-link{width:100%;background:none;border:none;cursor:pointer;text-align:
   cursor:pointer;outline:none;transition:border .15s}
 .pg-size-sel:focus{border-color:var(--blue)}
 
-/* â”€â”€ Table â”€â”€ */
 .tbl-wrap{background:var(--card);border:1px solid var(--border);border-radius:13px;overflow:hidden}
 .tbl-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse;min-width:560px}
@@ -961,13 +953,11 @@ td{padding:10px 13px;border-top:1px solid var(--border);vertical-align:middle}
 tbody tr{transition:background .18s,box-shadow .18s;cursor:pointer}
 tbody tr:hover{background:#0d172a;box-shadow:inset 3px 0 0 var(--blue)}
 
-/* â”€â”€ Progress bar (row usage) â”€â”€ */
 .prog-wrap{display:flex;align-items:center;gap:7px}
 .prog-bg{height:5px;background:#1a2840;border-radius:99px;width:75px;overflow:hidden;flex-shrink:0}
 .prog-fill{height:5px;border-radius:99px}
 .prog-pct{font-size:.69rem;color:var(--muted);min-width:28px}
 
-/* â”€â”€ Badges â”€â”€ */
 .badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;
   border-radius:99px;font-size:.64rem;font-weight:600}
 .b-ok    {background:#052e16;color:#22c55e;border:1px solid #064e26}
@@ -1000,7 +990,6 @@ tbody tr:hover{background:#0d172a;box-shadow:inset 3px 0 0 var(--blue)}
   box-shadow:0 0 0 2px rgba(34,197,94,.25);animation:opluse 2s ease-in-out infinite}
 @keyframes opluse{0%,100%{box-shadow:0 0 0 2px rgba(34,197,94,.25)}50%{box-shadow:0 0 0 5px rgba(34,197,94,.08)}}
 
-/* â”€â”€ Pagination â”€â”€ */
 .pagination{display:flex;align-items:center;gap:5px;justify-content:center;
   padding:12px 14px;border-top:1px solid var(--border)}
 .pg-btn{min-width:31px;height:31px;padding:0 6px;border-radius:7px;
@@ -1012,7 +1001,6 @@ tbody tr:hover{background:#0d172a;box-shadow:inset 3px 0 0 var(--blue)}
 .pg-btn:disabled{opacity:.3;cursor:default}
 .pg-gap{color:var(--muted);font-size:.77rem;padding:0 2px}
 
-/* â”€â”€ Restart log â”€â”€ */
 .log-wrap{background:var(--card);border:1px solid var(--border);border-radius:13px;overflow:hidden}
 .log-row{display:flex;gap:14px;padding:10px 16px;border-top:1px solid var(--border);align-items:flex-start}
 .log-row:first-child{border-top:none}
@@ -1021,13 +1009,11 @@ tbody tr:hover{background:#0d172a;box-shadow:inset 3px 0 0 var(--blue)}
 
 .empty{padding:28px;text-align:center;color:var(--muted);font-size:.81rem}
 
-/* â”€â”€ Tooltip â”€â”€ */
 .tip{display:inline-flex;align-items:center;justify-content:center;
   width:14px;height:14px;border-radius:50%;background:#162030;
   color:var(--muted);font-size:.6rem;font-weight:700;cursor:help;
   vertical-align:middle;margin-left:5px;border:1px solid var(--border)}
 
-/* â”€â”€ Settings / form â”€â”€ */
 .modal{background:var(--card);border:1px solid var(--border);border-radius:14px;
   padding:26px;max-width:640px}
 .form-group{margin-bottom:13px}
@@ -1039,7 +1025,6 @@ tbody tr:hover{background:#0d172a;box-shadow:inset 3px 0 0 var(--blue)}
 .form-group input:focus,.form-group select:focus{border-color:var(--blue)}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:11px}
 
-/* â”€â”€ Toast â”€â”€ */
 .toast{position:fixed;bottom:20px;right:20px;z-index:400;
   background:#1a2f5e;color:var(--blue);border:1px solid #2a4580;
   border-radius:9px;padding:11px 17px;font-size:.81rem;
@@ -1047,7 +1032,6 @@ tbody tr:hover{background:#0d172a;box-shadow:inset 3px 0 0 var(--blue)}
 .toast.show{transform:translateY(0);opacity:1}
 .toast.err{background:#3b0f0f;color:var(--red);border-color:#6b1a1a}
 
-/* â”€â”€ Auth â”€â”€ */
 .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center}
 .auth-box{background:var(--card);border:1px solid var(--border);
   border-radius:16px;padding:38px 34px;width:360px}
@@ -1064,7 +1048,6 @@ tbody tr:hover{background:#0d172a;box-shadow:inset 3px 0 0 var(--blue)}
 .submit-btn:hover{background:#3b7ce0;transform:translateY(-1px);box-shadow:0 6px 20px rgba(79,142,247,.4)}
 .submit-btn:active{transform:translateY(0);box-shadow:0 2px 8px rgba(79,142,247,.3)}
 
-/* â”€â”€ Server stats â”€â”€ */
 .server-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin-bottom:9px}
 .srv-bar{height:4px;background:#1a2840;border-radius:99px;overflow:hidden;margin-top:6px}
 .srv-fill{height:4px;border-radius:99px}
@@ -1072,18 +1055,15 @@ tbody tr:hover{background:#0d172a;box-shadow:inset 3px 0 0 var(--blue)}
 .srv-box:hover{border-color:var(--blue)}
 .srv-box.active{border-color:var(--blue);background:#0c1a30}
 
-/* â”€â”€ Chart card â”€â”€ */
 .chart-card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:17px;margin-bottom:22px}
 
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:var(--bg)}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 
-/* â”€â”€ Mobile â”€â”€ */
 @media(max-width:900px){
   .kpi-row{grid-template-columns:repeat(4,minmax(0,1fr))}
   .server-row{grid-template-columns:repeat(3,minmax(0,1fr))}
-  /* last orphan fills remaining cells in its row */
   .kpi-row .kpi:last-child{grid-column:span 2}
   .server-row .stat-box:last-child{grid-column:span 2}
 }
@@ -1097,7 +1077,6 @@ tbody tr:hover{background:#0d172a;box-shadow:inset 3px 0 0 var(--blue)}
   .kpi{padding:11px 10px;gap:8px}
   .kpi-icon{width:36px;height:36px;border-radius:9px}
   .kpi-body .val{font-size:1.1rem}
-  /* last orphan fills full row width */
   .kpi-row .kpi:last-child{grid-column:1/-1}
   .server-row .stat-box:last-child{grid-column:1/-1}
   .search{width:145px}
@@ -1220,7 +1199,7 @@ def topbar(extra="", page="dashboard", refresh_sel="", username=""):
     <div class="refresh-badge" style="cursor:pointer" title="Click to refresh now">
       <span onclick="refresh();_countdown=_refreshSec;document.getElementById('countdown').textContent=_refreshSec" style="display:flex;align-items:center;gap:3px">
       <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-      <span id="countdown">â€“</span>s</span>
+      <span id="countdown">–</span>s</span>
       {refresh_sel}
     </div>
     <span class="clock" id="clock">--:--:--</span>
@@ -1230,14 +1209,14 @@ def topbar(extra="", page="dashboard", refresh_sel="", username=""):
 """
 
 REGISTER_HTML = """<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Setup â€” 3x-ui Monitor</title>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Setup — 3x-ui Monitor</title>
 __STYLE__</head><body>
 <div class="auth-wrap"><div class="auth-box">
   <div class="auth-logo">
     <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
     3x-ui Monitor
   </div>
-  <div class="auth-sub">First run â€” create your admin account</div>
+  <div class="auth-sub">First run — create your admin account</div>
   {% if error %}<div class="err-msg">{{ error }}</div>{% endif %}
   <form method="post">
     <div class="form-group"><label>Username</label>
@@ -1251,7 +1230,7 @@ __STYLE__</head><body>
 </div></div></body></html>"""
 
 LOGIN_HTML = """<!DOCTYPE html>
-<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Login â€” 3x-ui Monitor</title>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Login — 3x-ui Monitor</title>
 __STYLE__</head><body>
 <div class="auth-wrap"><div class="auth-box">
   <div class="auth-logo">
@@ -1320,7 +1299,6 @@ html,body{height:100%;overflow:hidden}
 </style>
 <div class="wrap">
 
-  <!-- â”€â”€ Main view â”€â”€ -->
   <div id="view-main" class="view-panel active">
     <div class="main-top">
       <div class="kpi-row" id="kpis">
@@ -1334,17 +1312,17 @@ html,body{height:100%;overflow:hidden}
       </div>
       <div class="sec"><div class="sec-line"></div><span class="sec-title">Server</span><div class="sec-line"></div></div>
       <div class="server-row" id="server-stats">
-        <div class="stat-box srv-box" onclick="toggleSrvChart('cpu','CPU Usage')"><div class="sv">â€”</div><div class="sl">CPU</div></div>
-        <div class="stat-box srv-box" onclick="toggleSrvChart('ram','RAM Usage')"><div class="sv">â€”</div><div class="sl">RAM</div></div>
-        <div class="stat-box srv-box" onclick="toggleSrvChart('disk','Disk Usage')"><div class="sv">â€”</div><div class="sl">Disk</div></div>
-        <div class="stat-box"><div class="sv">â€”</div><div class="sl">Uptime / Xray</div></div>
-        <div class="stat-box srv-box" id="bw-srv" onclick="toggleSrvChart('net','Bandwidth')"><div class="sv">â€”</div><div class="sl">Bandwidth</div></div>
+        <div class="stat-box srv-box" onclick="toggleSrvChart('cpu','CPU Usage')"><div class="sv">—</div><div class="sl">CPU</div></div>
+        <div class="stat-box srv-box" onclick="toggleSrvChart('ram','RAM Usage')"><div class="sv">—</div><div class="sl">RAM</div></div>
+        <div class="stat-box srv-box" onclick="toggleSrvChart('disk','Disk Usage')"><div class="sv">—</div><div class="sl">Disk</div></div>
+        <div class="stat-box"><div class="sv">—</div><div class="sl">Uptime / Xray</div></div>
+        <div class="stat-box srv-box" id="bw-srv" onclick="toggleSrvChart('net','Bandwidth')"><div class="sv">—</div><div class="sl">Bandwidth</div></div>
       </div>
       <div id="srv-chart-panel" style="display:none;margin-bottom:10px;margin-top:10px">
         <div class="chart-card" style="margin-bottom:0">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
             <span style="font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px" id="srv-chart-title"></span>
-            <button onclick="closeSrvChart()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;line-height:1">âœ•</button>
+            <button onclick="closeSrvChart()" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:1rem;line-height:1">✕</button>
           </div>
           <div id="srv-chart-avg" style="display:none;font-size:.72rem;margin-bottom:8px;color:var(--muted)"></div>
           <canvas id="srv-chart" style="max-height:160px"></canvas>
@@ -1357,7 +1335,7 @@ html,body{height:100%;overflow:hidden}
       <div class="toolbar">
         <div class="search-wrap">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-          <input class="search" id="search" placeholder="Search usersâ€¦" oninput="_page=1;loadPage()">
+          <input class="search" id="search" placeholder="Search users…" oninput="_page=1;loadPage()">
         </div>
         <button class="chip active" data-f="all"     onclick="setFilter(this)">All</button>
         <button class="chip"        data-f="online"  onclick="setFilter(this)">Online</button>
@@ -1398,7 +1376,6 @@ html,body{height:100%;overflow:hidden}
     </div>
   </div>
 
-  <!-- â”€â”€ Traffic view â”€â”€ -->
   <div id="view-traffic" class="view-panel">
     <div class="panel-hd">
       <button class="back-btn" onclick="openView('main')">
@@ -1436,7 +1413,7 @@ html,body{height:100%;overflow:hidden}
             <div class="tbl-scroll" style="max-height:unset;overflow:visible">
               <table id="top-users-tbl">
                 <thead><tr><th>#</th><th>Email</th><th>Traffic</th><th>Share</th></tr></thead>
-                <tbody id="top-users-tbody"><tr><td colspan="4" style="text-align:center;color:var(--muted);padding:18px">Loadingâ€¦</td></tr></tbody>
+                <tbody id="top-users-tbody"><tr><td colspan="4" style="text-align:center;color:var(--muted);padding:18px">Loading…</td></tr></tbody>
               </table>
             </div>
           </div>
@@ -1450,7 +1427,6 @@ html,body{height:100%;overflow:hidden}
     </div>
   </div>
 
-  <!-- â”€â”€ Online view â”€â”€ -->
   <div id="view-online" class="view-panel">
     <div class="panel-hd">
       <button class="back-btn" onclick="openView('main')">
@@ -1486,7 +1462,6 @@ html,body{height:100%;overflow:hidden}
     </div>
   </div>
 
-  <!-- â”€â”€ Restarts view â”€â”€ -->
   <div id="view-restarts" class="view-panel">
     <div class="panel-hd">
       <button class="back-btn" onclick="openView('main')">
@@ -1527,13 +1502,11 @@ function openView(name){
   else if(name==='restarts') renderRestarts(_lastRestarts);
 }
 
-// Clock
 setInterval(()=>{
   const el=document.getElementById('clock');
   if(el) el.textContent=new Date().toLocaleTimeString('en-GB',{timeZone:CLIENT_TZ,hour12:false})+' (IR)';
 },1000);
 
-// Countdown â€” triggers full refresh
 setInterval(()=>{
   const cd=document.getElementById('countdown');
   _countdown--;
@@ -1561,7 +1534,7 @@ function sortBy(col){
 function updateArrows(){
   ['email','total','quota','pct'].forEach(c=>{
     const el=document.getElementById('sa-'+c);
-    if(el) el.textContent=_sort.col===c?(_sort.dir>0?'â†‘':'â†“'):'';
+    if(el) el.textContent=_sort.col===c?(_sort.dir>0?'↑':'↓'):'';
   });
 }
 
@@ -1587,7 +1560,7 @@ async function loadPage(){
     const {users,total,pages,page}=await fetch(url).then(r=>r.json());
     _page=page;
     const start=(page-1)*_pageSize;
-    document.getElementById('row-count').textContent=total?`${start+1}â€“${Math.min(start+_pageSize,total)} of ${total}`:'0 users';
+    document.getElementById('row-count').textContent=total?`${start+1}–${Math.min(start+_pageSize,total)} of ${total}`:'0 users';
     updateArrows();
     const tbody=document.getElementById('tbody');
     if(!users.length){tbody.innerHTML='<tr><td colspan="8" class="empty">No users found</td></tr>';renderPagination(1,1);return;}
@@ -1596,7 +1569,7 @@ async function loadPage(){
       const bc=barColor(p);
       const bar=u.quota>0
         ?`<div class="prog-wrap"><span class="prog-pct">${p.toFixed(0)}%</span><div class="prog-bg"><div class="prog-fill" style="width:${Math.min(p,100).toFixed(1)}%;background:${bc}"></div></div></div>`
-        :'<span style="color:var(--muted)">â€”</span>';
+        :'<span style="color:var(--muted)">—</span>';
       const badge=!u.enable?'<span class="badge b-off">Disabled</span>'
         :u.handled?'<span class="badge b-handle">Blocked</span>'
         :over?'<span class="badge b-over">Limit</span>'
@@ -1605,9 +1578,9 @@ async function loadPage(){
         :'<span class="badge b-ok">Active</span>';
       return`<tr onclick="location.href='/user/${encodeURIComponent(u.email)}'">
         <td style="color:var(--muted);font-size:.7rem">${start+i+1}</td>
-        <td style="font-weight:500">${u.email||'â€”'}</td>
+        <td style="font-weight:500">${u.email||'—'}</td>
         <td class="col-desktop">${fmt(u.total)}</td>
-        <td class="col-desktop">${u.quota>0?fmt(u.quota):'<span style="color:var(--muted)">â€”</span>'}</td>
+        <td class="col-desktop">${u.quota>0?fmt(u.quota):'<span style="color:var(--muted)">—</span>'}</td>
         <td>${bar}</td>
         <td class="col-desktop" style="color:var(--muted);font-size:.77rem">${fmt(u.up)}</td>
         <td class="col-desktop" style="color:var(--muted);font-size:.77rem">${fmt(u.down)}</td>
@@ -1629,11 +1602,11 @@ function renderPagination(totalPages,currentPage){
   }
   let html='',prev=0;
   for(const p of pages){
-    if(prev&&p-prev>1)html+='<span class="pg-gap">â€¦</span>';
+    if(prev&&p-prev>1)html+='<span class="pg-gap">…</span>';
     html+=`<button class="pg-btn${p===cp?' active':''}" onclick="goPage(${p})">${p}</button>`;
     prev=p;
   }
-  el.innerHTML=`<button class="pg-btn" onclick="goPage(${cp-1})" ${cp===1?'disabled':''}>â€¹</button>${html}<button class="pg-btn" onclick="goPage(${cp+1})" ${cp===totalPages?'disabled':''}>â€º</button>`;
+  el.innerHTML=`<button class="pg-btn" onclick="goPage(${cp-1})" ${cp===1?'disabled':''}>‹</button>${html}<button class="pg-btn" onclick="goPage(${cp+1})" ${cp===totalPages?'disabled':''}>›</button>`;
 }
 
 function goPage(p){
@@ -1667,9 +1640,8 @@ let _tChart=null,_tChartHours=0,_tHours=24,_uChart=null;
 (()=>{const v=new URLSearchParams(location.search).get('v');if(v)openView(v);history.replaceState({},'','/');})();
 refresh();
 
-// â”€â”€ Server stats â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function fmtUptime(sec){
-  if(!sec)return'â€”';
+  if(!sec)return'—';
   const d=Math.floor(sec/86400),h=Math.floor(sec%86400/3600),m=Math.floor(sec%3600/60);
   return d?`${d}d ${h}h`:h?`${h}h ${m}m`:`${m}m`;
 }
@@ -1685,12 +1657,11 @@ function fmtRate(bps){
   return bps.toFixed(0)+' B/s';
 }
 let _lastSrv={};
-// refreshServerStats only updates box 3 (Xray/uptime) â€” boxes 0-2,4 are driven by the 2s live poll
 async function refreshServerStats(){
   try{
     const s=await fetch('/api/server-stats').then(r=>r.json());
     _lastSrv=s;
-    const xrayState=s.xray?.state||'â€”', xrayVer=s.xray?.version||'';
+    const xrayState=s.xray?.state||'—', xrayVer=s.xray?.version||'';
     const xrayC=xrayState==='running'?'#22c55e':'#f04a4a';
     const el=document.getElementById('server-stats');
     if(!el)return;
@@ -1705,7 +1676,6 @@ async function refreshServerStats(){
 refreshServerStats();
 setInterval(refreshServerStats, 20000);
 
-// Always-on 2s live poll for boxes 0-3 (CPU / RAM / Disk / Bandwidth)
 setInterval(async function(){
   try{
     const s=await fetch('/api/live/stats').then(r=>r.json());
@@ -1725,14 +1695,14 @@ setInterval(async function(){
        bar:`<div class="srv-bar"><div class="srv-fill" style="width:${Math.min(cpu,100).toFixed(1)}%;background:${cpuC}"></div></div>`,
        metric:'cpu'},
       {sv:`<span style="color:${memC}">${fmtMem(mu)}</span> <span style="font-size:.65rem;color:var(--muted)">/ ${fmtMem(mt)}</span>`,
-       sl:`RAM â€” ${mp.toFixed(0)}%`,
+       sl:`RAM — ${mp.toFixed(0)}%`,
        bar:`<div class="srv-bar"><div class="srv-fill" style="width:${Math.min(mp,100).toFixed(1)}%;background:${memC}"></div></div>`,
        metric:'ram'},
       {sv:`<span style="color:${dskC}">${fmtMem(du)}</span> <span style="font-size:.65rem;color:var(--muted)">/ ${fmtMem(dt)}</span>`,
-       sl:`Disk â€” ${dp.toFixed(0)}%`,
+       sl:`Disk — ${dp.toFixed(0)}%`,
        bar:`<div class="srv-bar"><div class="srv-fill" style="width:${Math.min(dp,100).toFixed(1)}%;background:${dskC}"></div></div>`,
        metric:'disk'},
-      {sv:`<span style="color:#22c55e">â†‘ ${fmtRate(up)}</span> <span style="color:var(--muted)">/</span> <span style="color:#4f8ef7">â†“ ${fmtRate(dn)}</span>`,
+      {sv:`<span style="color:#22c55e">↑ ${fmtRate(up)}</span> <span style="color:var(--muted)">/</span> <span style="color:#4f8ef7">↓ ${fmtRate(dn)}</span>`,
        sl:'Bandwidth',
        bar:'',
        metric:'net'},
@@ -1750,14 +1720,13 @@ setInterval(async function(){
   }catch(e){}
 },2000);
 
-// â”€â”€ Server history chart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 let _srvChart=null, _srvMetric=null;
 const _srvColors={cpu:'#4f8ef7',ram:'#22c55e',disk:'#f59e0b',net:'#a78bfa'};
 
 function toggleSrvChart(metric,title){
   if(_srvMetric===metric){closeSrvChart();return;}
   _srvMetric=metric;
-  document.getElementById('srv-chart-title').textContent=title+' â€” loadingâ€¦';
+  document.getElementById('srv-chart-title').textContent=title+' — loading…';
   document.getElementById('srv-chart-panel').style.display='block';
   document.querySelectorAll('.srv-box').forEach(b=>b.classList.remove('active'));
   const idx={cpu:0,ram:1,disk:2,net:3}[metric];
@@ -1782,13 +1751,13 @@ async function loadSrvChart(){
     const chosenG=chosenH>=12?60:chosenH>=3?30:10;
     const data=await fetch(`/api/server/history?metric=${_srvMetric}&hours=${chosenH}&gran=${chosenG}`).then(r=>r.json());
     if(!data.length){
-      document.getElementById('srv-chart-title').textContent=_srvMetric.toUpperCase()+' â€” collecting dataâ€¦';
+      document.getElementById('srv-chart-title').textContent=_srvMetric.toUpperCase()+' — collecting data…';
       return;
     }
     const timeLabel=chosenH<24?`last ${chosenH}h`:'last 24h';
     document.getElementById('srv-chart-title').textContent=
       (_srvMetric==='cpu'?'CPU':_srvMetric==='ram'?'RAM':_srvMetric==='disk'?'Disk':'Bandwidth')+
-      ` â€” ${timeLabel}`;
+      ` — ${timeLabel}`;
     const labels=data.map(d=>d.hour);
     const values=data.map(d=>d.value);
     const unit=data[0]?.unit||'%';
@@ -1806,7 +1775,7 @@ async function loadSrvChart(){
     const avgDn=isNet?data.reduce((s,d)=>s+(d.down||0),0)/Math.max(data.length,1):0;
     const avgEl=document.getElementById('srv-chart-avg');
     if(avgEl&&isNet){
-      avgEl.innerHTML=`Avg: <span style="color:#22c55e">â†‘ ${fmtBw(avgUp)}</span>&nbsp;&nbsp;<span style="color:#4f8ef7">â†“ ${fmtBw(avgDn)}</span>`;
+      avgEl.innerHTML=`Avg: <span style="color:#22c55e">↑ ${fmtBw(avgUp)}</span>&nbsp;&nbsp;<span style="color:#4f8ef7">↓ ${fmtBw(avgDn)}</span>`;
       avgEl.style.display='block';
     } else if(avgEl){avgEl.style.display='none';}
     const datasets=isNet?[
@@ -1822,7 +1791,7 @@ async function loadSrvChart(){
         const tot=c.datasetIndex===0?d?.total_up:d?.total_down;
         return ` ${c.dataset.label}: ${fmtBw(c.parsed.y)}  (${fmtMB(tot||0)})`;
       },
-      afterBody:()=>[`  Avg: â†‘ ${fmtBw(avgUp)}  â†“ ${fmtBw(avgDn)}`]
+      afterBody:()=>[`  Avg: ↑ ${fmtBw(avgUp)}  ↓ ${fmtBw(avgDn)}`]
     }:{label:c=>` ${c.dataset.label}: ${c.parsed.y.toFixed(1)} ${unit}`};
     const cfg={
       type:'line',
@@ -1846,9 +1815,7 @@ async function loadSrvChart(){
   }catch(e){}
 }
 
-// â”€â”€ Traffic chart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
-// â”€â”€ Logging toggles â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const _logState={traffic_log_enabled:__TRAFFIC_LOG__,online_log_enabled:__ONLINE_LOG__};
 
 function applyLogGate(type, enabled){
@@ -1916,10 +1883,9 @@ async function refreshTrafficChart(){
       {l:`Total (${tLabel})`,  v:fmt(total),    c:'#4f8ef7'},
       {l:'Daily Avg',          v:fmt(dailyAvg), c:'#a78bfa'},
       {l:'Peak interval',      v:fmt(peak),     c:'#f59e0b'},
-      {l:'Top user',           v:topUsers[0]?.email?.split('@')[0]||'â€”', c:'#22c55e'},
+      {l:'Top user',           v:topUsers[0]?.email?.split('@')[0]||'—', c:'#22c55e'},
     ].map(s=>`<div class="stat-box" style="padding:8px 12px"><div class="sv" style="font-size:.82rem;color:${s.c||'var(--text)'}">${s.v}</div><div class="sl">${s.l}</div></div>`).join('');
 
-    // Main timeline chart
     const color='#4f8ef7';
     if(_tChart&&_tChartHours===hours){
       _tChart.data.labels=labels;_tChart.data.datasets[0].data=values;_tChart.update();
@@ -1942,9 +1908,8 @@ async function refreshTrafficChart(){
     }
 
     {
-      // Top users horizontal bar chart
       const top10=topUsers.slice(0,10);
-      const uLabels=top10.map(u=>u.email.length>22?u.email.slice(0,20)+'â€¦':u.email);
+      const uLabels=top10.map(u=>u.email.length>22?u.email.slice(0,20)+'…':u.email);
       const uValues=top10.map(u=>u.gb);
       const uColors=['#4f8ef7','#22c55e','#f59e0b','#f04a4a','#a78bfa','#06b6d4','#f97316','#ec4899','#84cc16','#14b8a6'];
       if(_uChart){_uChart.destroy();}
@@ -1959,7 +1924,6 @@ async function refreshTrafficChart(){
           y:{ticks:{color:'#4a637a',font:{size:10}},grid:{color:'#1a2840'}}
         }}
       });
-      // Top users table
       const totalBytes=topUsers.reduce((s,u)=>s+u.bytes,0);
       document.getElementById('top-users-tbody').innerHTML=topUsers.length
         ?topUsers.map((u,i)=>{
@@ -1978,7 +1942,6 @@ async function refreshTrafficChart(){
 }
 setInterval(()=>{if(document.getElementById('view-traffic').classList.contains('active'))refreshTrafficChart();},60000);
 
-// â”€â”€ Online history chart â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 let _onlineChart=null;
 
 function fmtDur(sec){
@@ -2018,7 +1981,7 @@ async function loadOnlineChart(){
   try{
     const data=await fetch('/api/online/history').then(r=>r.json());
     if(!data.length){
-      document.getElementById('online-stats').innerHTML='<span style="font-size:.72rem;color:var(--muted)">Not enough data yet â€” check back in 30 min.</span>';
+      document.getElementById('online-stats').innerHTML='<span style="font-size:.72rem;color:var(--muted)">Not enough data yet — check back in 30 min.</span>';
     }else{
       const labels=data.map(d=>{
         const dt=new Date(d.ts*1000);
@@ -2066,7 +2029,7 @@ USER_HTML = r"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>__EMAIL__ â€” 3x-ui Monitor</title>
+<title>__EMAIL__ — 3x-ui Monitor</title>
 <script src="/static/chart.min.js"></script>
 __BASE_STYLE__
 <style>
@@ -2152,7 +2115,7 @@ function renderHeader(u,handled){
   const isOver=u.quota>0&&u.total>u.quota;
   const p=pct(u.total,u.quota),bc=barColor(p);
   const badge=!u.enable?'<span class="badge b-off">Disabled</span>'
-    :isHandled?'<span class="badge b-handle">Blocked â€” awaiting renewal</span>'
+    :isHandled?'<span class="badge b-handle">Blocked — awaiting renewal</span>'
     :isOver?'<span class="badge b-over">Limit</span>'
     :u.expired?'<span class="badge b-exp">Expired</span>'
     :'<span class="badge b-ok">Active</span>';
@@ -2245,7 +2208,7 @@ SETTINGS_HTML = r"""<!DOCTYPE html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Settings â€” 3x-ui Monitor</title>
+<title>Settings — 3x-ui Monitor</title>
 __BASE_STYLE__
 <style>
 .s-card{background:var(--card);border-radius:11px;padding:18px 20px;margin-bottom:13px;border-left:3px solid var(--blue);transition:border-color .25s,background .25s}
@@ -2259,8 +2222,8 @@ __BASE_STYLE__
 .s-badge.info{background:#0f172a;color:#93c5fd;border:1px solid #1e3a5f}
 .field-desc{font-size:.69rem;color:var(--muted);margin:.3rem 0 0;line-height:1.5}
 label.imp{color:var(--fg)}
-label.imp::after{content:' â˜…';color:#f59e0b;font-size:.58rem;vertical-align:super}
-label.crit::after{content:' â—';color:#ef4444;font-size:.5rem;vertical-align:middle;margin-left:3px}
+label.imp::after{content:' ★';color:#f59e0b;font-size:.58rem;vertical-align:super}
+label.crit::after{content:' ●';color:#ef4444;font-size:.5rem;vertical-align:middle;margin-left:3px}
 .dim-fields{opacity:.45;pointer-events:none;transition:opacity .25s}
 </style>
 </head>
@@ -2275,7 +2238,6 @@ __TOPBAR__
 
   <form id="sf">
 
-    <!-- Panel -->
     <div class="s-card" style="border-left-color:#ef4444">
       <div class="s-head">
         <svg class="s-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
@@ -2285,7 +2247,7 @@ __TOPBAR__
       <div class="form-group">
         <label class="crit">Panel URL</label>
         <input name="panel_url" value="__PANEL_URL__">
-        <p class="field-desc">Full URL including the secret path â€” e.g. <code>http://1.2.3.4:2096/secretpath</code>. Without this nothing works.</p>
+        <p class="field-desc">Full URL including the secret path — e.g. <code>http://1.2.3.4:2096/secretpath</code>. Without this nothing works.</p>
       </div>
       <div class="form-row">
         <div class="form-group">
@@ -2301,7 +2263,6 @@ __TOPBAR__
       </div>
     </div>
 
-    <!-- Monitor -->
     <div class="s-card" style="border-left-color:#f59e0b" id="card-monitor">
       <div class="s-head">
         <svg class="s-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
@@ -2324,20 +2285,19 @@ __TOPBAR__
         <div class="form-group">
           <label>Reset Ratio</label>
           <input name="reset_ratio" type="number" step="0.05" min="0" max="1" value="__RESET_RATIO__">
-          <p class="field-desc">A blocked user gets unblocked when their usage drops below this fraction of quota (e.g. <code>0.5</code> = 50%). Range: 0â€“1.</p>
+          <p class="field-desc">A blocked user gets unblocked when their usage drops below this fraction of quota (e.g. <code>0.5</code> = 50%). Range: 0–1.</p>
         </div>
         <div class="form-group">
           <label class="imp">Auto-restart Xray</label>
           <select name="auto_restart_xray" id="sel-ar" onchange="updateArCard()">
             <option value="1"__OPT_AR_1__>Enabled (default)</option>
-            <option value="0"__OPT_AR_0__>Disabled â€” monitor only</option>
+            <option value="0"__OPT_AR_0__>Disabled — monitor only</option>
           </select>
-          <p class="field-desc">When a user exceeds quota, restart Xray core to cut their connection. Only the Xray core is restarted â€” the panel stays up.</p>
+          <p class="field-desc">When a user exceeds quota, restart Xray core to cut their connection. Only the Xray core is restarted — the panel stays up.</p>
         </div>
       </div>
     </div>
 
-    <!-- Dashboard -->
     <div class="s-card" style="border-left-color:var(--blue)">
       <div class="s-head">
         <svg class="s-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
@@ -2348,7 +2308,7 @@ __TOPBAR__
         <div class="form-group">
           <label>Auto-refresh (sec)</label>
           <input name="dashboard_refresh" type="number" min="10" value="__DASH_REFRESH__">
-          <p class="field-desc">How often the page refreshes data â€” shown as a progress bar at the top. Default: 30s.</p>
+          <p class="field-desc">How often the page refreshes data — shown as a progress bar at the top. Default: 30s.</p>
         </div>
         <div class="form-group">
           <label>Users per page</label>
@@ -2359,11 +2319,10 @@ __TOPBAR__
       <div class="form-group">
         <label>Timezone</label>
         <input name="timezone" value="__TZ__" placeholder="Asia/Tehran">
-        <p class="field-desc">IANA timezone for all displayed times â€” e.g. <code>Asia/Tehran</code>, <code>UTC</code>, <code>Europe/London</code>.</p>
+        <p class="field-desc">IANA timezone for all displayed times — e.g. <code>Asia/Tehran</code>, <code>UTC</code>, <code>Europe/London</code>.</p>
       </div>
     </div>
 
-    <!-- TLS -->
     <div class="s-card" id="card-tls">
       <div class="s-head">
         <svg class="s-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
@@ -2382,7 +2341,7 @@ __TOPBAR__
         <div class="form-group">
           <label>Domain</label>
           <input name="tls_domain" value="__TLS_DOMAIN__" placeholder="example.com">
-          <p class="field-desc">Your domain pointing to this server (reference only â€” not used for routing).</p>
+          <p class="field-desc">Your domain pointing to this server (reference only — not used for routing).</p>
         </div>
       </div>
       <div id="tls-fields" style="display:__TLS_FIELDS_DISPLAY__">
@@ -2401,7 +2360,6 @@ __TOPBAR__
       </div>
     </div>
 
-    <!-- Auto Cleanup -->
     <div class="s-card" id="card-cleanup">
       <div class="s-head">
         <svg class="s-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
@@ -2448,7 +2406,6 @@ __TOPBAR__
       </div>
     </div>
 
-    <!-- Panel User Cleanup -->
     <div class="s-card" id="card-panel-cleanup" style="border-left-color:#a78bfa">
       <div class="s-head">
         <svg class="s-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><line x1="18" y1="8" x2="23" y2="13"/><line x1="23" y1="8" x2="18" y2="13"/></svg>
@@ -2459,7 +2416,6 @@ __TOPBAR__
         Users that are expired (max 90 days) or over their traffic quota.
       </p>
 
-      <!-- Auto-delete strip -->
       <div style="display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:14px;
            padding:9px 12px;background:var(--surface);border:1px solid var(--border);border-radius:8px">
         <span style="font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px">Auto Delete</span>
@@ -2528,7 +2484,6 @@ __TOPBAR__
     </div>
   </form>
 
-  <!-- Data Management -->
   <div class="s-card" style="border-left-color:#6366f1">
     <div class="s-head">
       <svg class="s-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
@@ -2537,10 +2492,10 @@ __TOPBAR__
     </div>
 
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:9px;margin-bottom:16px" id="db-stats">
-      <div class="stat-box"><div class="sv">â€”</div><div class="sl">Traffic DB</div></div>
-      <div class="stat-box"><div class="sv">â€”</div><div class="sl">App DB</div></div>
-      <div class="stat-box"><div class="sv">â€”</div><div class="sl">Snapshots</div></div>
-      <div class="stat-box"><div class="sv">â€”</div><div class="sl">Oldest record</div></div>
+      <div class="stat-box"><div class="sv">—</div><div class="sl">Traffic DB</div></div>
+      <div class="stat-box"><div class="sv">—</div><div class="sl">App DB</div></div>
+      <div class="stat-box"><div class="sv">—</div><div class="sl">Snapshots</div></div>
+      <div class="stat-box"><div class="sv">—</div><div class="sl">Oldest record</div></div>
     </div>
 
     <form id="hf" style="margin-bottom:14px">
@@ -2629,14 +2584,14 @@ async function runManualCleanup(){
   const days=parseInt(document.getElementById('manual-days')?.value)||7;
   const btn=document.getElementById('btn-manual-clean');
   const res=document.getElementById('cleanup-result');
-  btn.disabled=true;res.textContent='Runningâ€¦';res.style.color='var(--muted)';
+  btn.disabled=true;res.textContent='Running…';res.style.color='var(--muted)';
   try{
     const r=await fetch('/api/clear-history',{method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({keep_days:days})});
     const j=await r.json();
     if(j.ok){
-      res.textContent=`Done â€” ${j.deleted.toLocaleString()} rows deleted (kept last ${days}d)`;
+      res.textContent=`Done — ${j.deleted.toLocaleString()} rows deleted (kept last ${days}d)`;
       res.style.color='#22c55e';
     }else{
       res.textContent='Error: '+(j.error||'unknown');res.style.color='var(--red)';
@@ -2646,7 +2601,6 @@ async function runManualCleanup(){
   setTimeout(()=>{res.textContent='';},8000);
 }
 
-// initialise visual state from current select values
 updateArCard();updateTlsCard();updateCleanupCard();
 
 const _origTls=document.getElementById('tls-enabled-sel')?.value||'0';
@@ -2661,10 +2615,10 @@ document.getElementById('sf').onsubmit=async e=>{
   if(data.tls_enabled==='1'&&_origTls!=='1'){
     const ok=confirm('TLS is enabled.\nRestart the dashboard service now to apply HTTPS?');
     if(ok){
-      toast('Restarting serviceâ€¦');
+      toast('Restarting service…');
       const rr=await fetch('/api/restart-dashboard',{method:'POST'}).then(x=>x.json()).catch(()=>({ok:false}));
       if(rr.ok) setTimeout(()=>{location.reload();},3500);
-      else toast('Restart failed â€” run: sudo systemctl restart xui-dashboard',true);
+      else toast('Restart failed — run: sudo systemctl restart xui-dashboard',true);
     }
   }
 };
@@ -2688,7 +2642,7 @@ async function loadDbStats(){
       {v:s.traffic_db_mb+' MB',l:'Traffic DB'},
       {v:s.app_db_mb+' MB',l:'App DB'},
       {v:s.snapshot_count.toLocaleString(),l:'Snapshots'},
-      {v:s.oldest||'â€”',l:'Oldest record'},
+      {v:s.oldest||'—',l:'Oldest record'},
     ].map(x=>`<div class="stat-box"><div class="sv">${x.v}</div><div class="sl">${x.l}</div></div>`).join('');
   }catch(e){}
 }
@@ -2710,16 +2664,15 @@ async function vacuumDb(){
   const btn=document.getElementById('btn-vacuum');
   const orig=btn.innerHTML;
   btn.disabled=true;
-  btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin .8s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Compressingâ€¦';
+  btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation:spin .8s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Compressing…';
   const r=await fetch('/api/vacuum-db',{method:'POST'}).then(x=>x.json()).catch(()=>({ok:false,error:'Network error'}));
   btn.disabled=false;btn.innerHTML=orig;
   if(r.ok){
-    const msg=r.saved_mb>0?`Compressed â€” saved ${r.saved_mb} MB`:'Compressed â€” no free space to reclaim';
+    const msg=r.saved_mb>0?`Compressed — saved ${r.saved_mb} MB`:'Compressed — no free space to reclaim';
     toast(msg);loadDbStats();
   } else toast('Error: '+r.error,true);
 }
 
-// â”€â”€ Panel Auto-Delete settings â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 function updatePanelClnBadge(){
   const v=document.getElementById('sel-panel-cln').value;
   const b=document.getElementById('panel-cln-badge');
@@ -2738,10 +2691,8 @@ async function savePanelClnSettings(){
   msg.style.color=j.ok?'var(--green)':'var(--red)';
   setTimeout(()=>msg.textContent='',3000);
 }
-// initialise badge on page load
 updatePanelClnBadge();
 
-// â”€â”€ Panel User Cleanup â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 let _panelCandidates=[];
 let _panelFilter='all';
 
@@ -2751,7 +2702,7 @@ async function panelCleanupPreview(){
   const msg=document.getElementById('panel-preview-msg');
   const wrap=document.getElementById('panel-candidates-wrap');
   const filterRow=document.getElementById('panel-filter-row');
-  btn.disabled=true;msg.textContent='Loadingâ€¦';msg.style.color='var(--muted)';
+  btn.disabled=true;msg.textContent='Loading…';msg.style.color='var(--muted)';
   try{
     const r=await fetch(`/api/cleanup/panel-preview?old_days=${oldDays}`);
     const j=await r.json();
@@ -2843,7 +2794,7 @@ async function panelCleanupExecute(){
   const emailList=targets.map(t=>t.email).join('\n');
   if(!confirm(`Permanently delete ${targets.length} user(s) from the panel?\n\n${emailList}\n\nThis cannot be undone.`))return;
   const btn=document.getElementById('btn-panel-delete');
-  btn.disabled=true;dmsg.textContent=`Deleting ${targets.length} user(s)â€¦`;dmsg.style.color='var(--muted)';
+  btn.disabled=true;dmsg.textContent=`Deleting ${targets.length} user(s)…`;dmsg.style.color='var(--muted)';
   try{
     const r=await fetch('/api/cleanup/panel-execute',{method:'POST',
       headers:{'Content-Type':'application/json'},body:JSON.stringify({targets})});
