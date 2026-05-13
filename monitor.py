@@ -63,6 +63,7 @@ def reset_ratio()    -> float: return float(_cfg("reset_ratio") or 0.5)
 
 def init_db():
     with sqlite3.connect(DB_FILE) as c:
+        c.execute("PRAGMA journal_mode=WAL")
         c.execute("""
             CREATE TABLE IF NOT EXISTS snapshots (
                 id      INTEGER PRIMARY KEY AUTOINCREMENT,

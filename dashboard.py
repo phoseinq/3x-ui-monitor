@@ -42,6 +42,7 @@ def app_db():
 def traffic_db():
     c = sqlite3.connect(TRAFFIC_DB)
     c.row_factory = sqlite3.Row
+    c.execute("PRAGMA journal_mode=WAL")
     return c
 
 def init_app_db():
