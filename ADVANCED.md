@@ -1,8 +1,8 @@
 <div dir="rtl" align="right">
 
-# مستندات کامل — 3x-ui Monitor
+# مستندات کامل
 
-[← برگشت به README](README.md)
+[← دستورات boy](CLI.md)
 
 ---
 
@@ -10,30 +10,14 @@
 
 - **نمودار ترافیک** — گراف مصرف ساعتی به تفکیک هر کاربر و مجموع کل
 - **کاربران آنلاین** — شناسایی لحظه‌ای با نمایش مدت اتصال
-- **سلامت سرور** — CPU، RAM، دیسک و پهنای باند
-- **راه‌اندازی مجدد خودکار Xray** — هنگام عبور کاربر از کوتا (با مقدار مجاز قابل تنظیم)
+- **سلامت سرور** — CPU، RAM، دیسک و پهنای باند زنده
+- **ری‌استارت خودکار Xray** — هنگام عبور کاربر از کوتا (با مقدار مجاز قابل تنظیم)
 - **پاک‌سازی پنل** — مشاهده و حذف انبوه کاربران منقضی، لیمیت‌شده یا قدیمی مستقیم از پنل
-- **بکاپ قبل از حذف** — فایل CSV از اطلاعات کاربران قبل از هر حذف ذخیره می‌شود
+- **بکاپ قبل از حذف** — فایل CSV از اطلاعات کاربران قبل از هر حذف ذخیره می‌شه
 - **زمان‌بند پاک‌سازی** — حذف خودکار شبانه در ساعت دلخواه
 - **HTTPS** — فعال‌سازی اختیاری با گواهینامه دلخواه
-- **منطقه زمانی** — تمام زمان‌ها در timezone تنظیم‌شده نمایش داده می‌شوند
+- **منطقه زمانی** — تمام زمان‌ها در timezone تنظیم‌شده نمایش داده می‌شن
 - **چند مدیر** — حساب‌های مدیریتی با رمزنگاری PBKDF2
-
----
-
-## راهنمای تنظیمات
-
-| تنظیم | توضیح |
-|---|---|
-| آدرس پنل | آدرس کامل پنل 3x-ui — مثلاً `http://1.2.3.4:2096` یا `https://panel.example.com` |
-| نام کاربری / رمز پنل | اطلاعات ورود به پنل 3x-ui |
-| فاصله بررسی | هر چند ثانیه پنل بررسی شود (پیش‌فرض: ۳۰) |
-| مجاز اضافی (MB) | ترافیک اضافه مجاز بعد از کوتا قبل از ری‌استارت Xray |
-| راه‌اندازی مجدد Xray | فعال/غیرفعال کردن ری‌استارت خودکار |
-| منطقه زمانی | مثلاً `Asia/Tehran` |
-| HTTPS | فعال‌سازی با مسیر cert و key |
-| پاک‌سازی خودکار | حذف شبانه رکوردهای قدیمی از DB محلی |
-| پاک‌سازی پنل | حذف کاربران منقضی/لیمیت‌شده مستقیم از پنل |
 
 ---
 
@@ -41,22 +25,36 @@
 
 | سرویس | نقش |
 |---|---|
-| `xui-dashboard` | رابط تحت‌وب — روی پورت ۵۰۰۰ اجرا می‌شود |
-| `xui-monitor` | پردازش پس‌زمینه — پنل را بررسی می‌کند و در صورت تجاوز از کوتا، Xray را ری‌استارت می‌کند |
+| `xui-dashboard` | رابط تحت‌وب — روی پورت ۵۰۰۰ اجرا می‌شه |
+| `xui-monitor` | پردازش پس‌زمینه — پنل رو بررسی می‌کنه و در صورت تجاوز از کوتا Xray رو ری‌استارت می‌کنه |
 
-هر دو سرویس با راه‌اندازی سیستم شروع می‌شوند و در صورت خطا خودکار ری‌استارت می‌شوند.
+هر دو سرویس با راه‌اندازی سیستم شروع می‌شن و در صورت خطا خودکار ری‌استارت می‌شن.
 
 ---
 
 ## بکاپ کاربران حذف‌شده
 
-قبل از هر حذف (چه دستی چه خودکار)، یک فایل CSV در مسیر زیر ذخیره می‌شود:
+قبل از هر حذف (دستی یا خودکار)، یک فایل CSV در این مسیر ذخیره می‌شه:
 
 ```
 /opt/xui-monitor/deleted_backup/YYYY-MM-DD_HH-MM-SS.csv
 ```
 
-فیلدها: `email`, `client_id`, `subscription`, `tg_id`, `comment`, `quota_gb`, `up_gb`, `down_gb`, `total_gb`, `pct`, `expiry_date`
+فیلدها: `email`، `client_id`، `subscription`، `tg_id`، `comment`، `quota_gb`، `up_gb`، `down_gb`، `total_gb`، `pct`، `expiry_date`
+
+---
+
+## فایل‌ها
+
+| فایل | مکان |
+|---|---|
+| داشبورد | `/opt/xui-monitor/dashboard.py` |
+| مانیتور | `/opt/xui-monitor/monitor.py` |
+| boy CLI | `/opt/xui-monitor/boy.py` → `/usr/local/bin/boy` |
+| Chart.js | `/opt/xui-monitor/static/chart.min.js` |
+| DB ترافیک | `/opt/xui-monitor/traffic.db` |
+| DB تنظیمات | `/opt/xui-monitor/app.db` |
+| بکاپ حذف | `/opt/xui-monitor/deleted_backup/` |
 
 ---
 
@@ -70,7 +68,7 @@
 | `requests` | ارتباط با API پنل 3x-ui |
 | `tzdata` | پایگاه داده منطقه‌های زمانی |
 
-**استاندارد پایتون (نیاز به نصب ندارند):**
+**استاندارد پایتون (نیاز به نصب ندارن):**
 
 `sqlite3`, `hashlib`, `threading`, `zoneinfo`, `logging`, `json`, `pathlib`, `datetime`, `csv`
 
@@ -78,9 +76,9 @@
 
 ---
 
-# Advanced Docs — 3x-ui Monitor
+# Advanced Docs
 
-[← Back to README](README.md)
+[← boy CLI](CLI.md)
 
 ---
 
@@ -99,22 +97,6 @@
 
 ---
 
-## Settings reference
-
-| Setting | Description |
-|---|---|
-| Panel URL | Full URL to your 3x-ui panel — e.g. `http://1.2.3.4:2096` or `https://panel.example.com` |
-| Panel User / Pass | Your 3x-ui login credentials |
-| Check Interval | How often the monitor polls the panel in seconds (default: 30) |
-| Grace MB | Extra traffic allowed after quota before Xray restarts |
-| Auto-restart Xray | Enable/disable automatic Xray restart on quota breach |
-| Timezone | e.g. `Asia/Tehran` |
-| HTTPS | Enable with cert and key paths |
-| Auto Cleanup | Nightly deletion of old records from local DB |
-| Panel Cleanup | Delete expired / over-limit users directly from the panel |
-
----
-
 ## Services
 
 | Service | Role |
@@ -128,13 +110,27 @@ Both start on boot and restart automatically on failure.
 
 ## Deletion backup
 
-Before any delete (manual or scheduled), a CSV is written to:
+Before any delete (manual or scheduled), a CSV is saved to:
 
 ```
 /opt/xui-monitor/deleted_backup/YYYY-MM-DD_HH-MM-SS.csv
 ```
 
 Fields: `email`, `client_id`, `subscription`, `tg_id`, `comment`, `quota_gb`, `up_gb`, `down_gb`, `total_gb`, `pct`, `expiry_date`
+
+---
+
+## File locations
+
+| File | Path |
+|---|---|
+| Dashboard | `/opt/xui-monitor/dashboard.py` |
+| Monitor | `/opt/xui-monitor/monitor.py` |
+| boy CLI | `/opt/xui-monitor/boy.py` → `/usr/local/bin/boy` |
+| Chart.js | `/opt/xui-monitor/static/chart.min.js` |
+| Traffic DB | `/opt/xui-monitor/traffic.db` |
+| Settings DB | `/opt/xui-monitor/app.db` |
+| Deletion backups | `/opt/xui-monitor/deleted_backup/` |
 
 ---
 
