@@ -1,8 +1,8 @@
-﻿#!/usr/bin/env python3
+#!/usr/bin/env python3
 """
 3x-ui traffic monitor.
 Settings (panel URL, credentials, thresholds) are read from app.db at runtime
-and cached for 60 s â€” changes saved in the dashboard take effect automatically.
+and cached for 60 s — changes saved in the dashboard take effect automatically.
 """
 
 import json
@@ -27,7 +27,7 @@ logging.basicConfig(
 log = logging.getLogger(__name__)
 
 
-# â”€â”€ Settings (read from app.db, cached 60 s) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── Settings (read from app.db, cached 60 s) ──────────────────────────────────
 
 _cfg_cache: dict = {"ts": 0.0, "data": {}}
 
@@ -65,7 +65,7 @@ def grace_bytes()    -> float: return max(0, int(_cfg("grace_mb") or 100)) * 102
 def reset_ratio()    -> float: return float(_cfg("reset_ratio") or 0.5)
 
 
-# â”€â”€ DB helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── DB helpers ────────────────────────────────────────────────────────────────
 
 def init_db():
     with sqlite3.connect(DB_FILE) as c:
@@ -148,9 +148,17 @@ def cleanup_handled(clients: list[dict]):
         log.info("Renewed users removed from handled: %s", ", ".join(renewed))
 
 
-# â”€â”€ Panel session â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── Panel session ─────────────────────────────────────────────────────────────
 
 _session = requests.Session()
+
+
+def _new_session() -> requests.Session:
+    global _session
+    s = requests.Session()
+    s.headers.update({"Connection": "close"})
+    _session = s
+    return _session
 
 
 def _save_cookie():
@@ -167,16 +175,20 @@ def _load_cookie() -> bool:
 
 
 def login() -> bool:
-    r = _session.post(
-        f"{panel_url()}/login",
-        json={"username": panel_user(), "password": panel_pass()},
-        timeout=10,
-    )
-    if r.json().get("success"):
-        _save_cookie()
-        log.info("Login successful, cookie cached.")
-        return True
-    log.error("Login failed: %s", r.json())
+    _new_session()
+    try:
+        r = _session.post(
+            f"{panel_url()}/login",
+            json={"username": panel_user(), "password": panel_pass()},
+            timeout=30,
+        )
+        if r.json().get("success"):
+            _save_cookie()
+            log.info("Login successful, cookie cached.")
+            return True
+        log.error("Login failed: %s", r.json())
+    except RequestException as e:
+        log.error("Login request failed: %s", e)
     return False
 
 
@@ -184,7 +196,7 @@ def api_get(path: str) -> dict | None:
     base = panel_url()
     for attempt in range(2):
         try:
-            r    = _session.get(f"{base}{path}", timeout=10)
+            r    = _session.get(f"{base}{path}", timeout=(10, 60))
             data = r.json()
             if r.status_code == 401 or (not data.get("success") and attempt == 0):
                 log.info("Session expired, re-authenticating...")
@@ -194,12 +206,16 @@ def api_get(path: str) -> dict | None:
             return data
         except RequestException as e:
             log.error("Request error %s: %s", path, e)
+            if attempt == 0:
+                log.info("Retrying after error — re-authenticating...")
+                if login():
+                    continue
             return None
     return None
 
 
 def restart_xray(reason: str) -> bool:
-    log.warning("Restarting Xray core â€” %s", reason)
+    log.warning("Restarting Xray core — %s", reason)
     try:
         r  = _session.post(f"{panel_url()}/panel/api/server/restartXrayService", timeout=15)
         ok = r.json().get("success", False)
@@ -210,11 +226,11 @@ def restart_xray(reason: str) -> bool:
         log.info("Xray core restarted successfully.")
         log_restart(reason)
     else:
-        log.error("Xray restart failed â€” will retry next cycle.")
+        log.error("Xray restart failed — will retry next cycle.")
     return ok
 
 
-# â”€â”€ Core logic â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── Core logic ────────────────────────────────────────────────────────────────
 
 def parse_clients(inbounds: list) -> list[dict]:
     now_ms  = int(time.time() * 1000)
@@ -272,7 +288,7 @@ def check_once() -> bool:
     if _cfg("auto_restart_xray") != "0":
         restart_xray(f"overquota: {names}")
     else:
-        log.info("Auto-restart disabled â€” skipping Xray restart.")
+        log.info("Auto-restart disabled — skipping Xray restart.")
     add_handled(new_offenders)
     return True
 
@@ -281,7 +297,7 @@ def main():
     init_db()
     _load_cookie() or login()
     log.info(
-        "Monitor started â€” interval=%ds  grace=%.0fMB  reset_ratio=%.2f",
+        "Monitor started — interval=%ds  grace=%.0fMB  reset_ratio=%.2f",
         check_interval(), grace_bytes() / 1024**2, reset_ratio(),
     )
     while True:
@@ -294,4 +310,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

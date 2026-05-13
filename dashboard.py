@@ -8,7 +8,7 @@ import sqlite3
 import threading
 import time
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, timedelta
 from functools import wraps
 from pathlib import Path
 
@@ -30,6 +30,7 @@ SECRET_KEY  = "xui-monitor-2026-change-me"
 
 app = Flask(__name__, static_folder=STATIC_DIR)
 app.secret_key = SECRET_KEY
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=30)
 
 
 # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
@@ -3027,6 +3028,7 @@ def register():
         elif pw != pw2:        error = "Passwords do not match."
         else:
             create_admin(username, pw, role="superadmin")
+            session.permanent    = True
             session["logged_in"] = True
             session["username"]  = username
             return redirect(url_for("index"))
@@ -3044,6 +3046,7 @@ def login():
         u = request.form.get("username", "")
         p = request.form.get("password", "")
         if check_credentials(u, p):
+            session.permanent    = True
             session["logged_in"] = True
             session["username"]  = u
             return redirect(url_for("index"))
