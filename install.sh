@@ -121,9 +121,7 @@ ln -sf "${DIR}/boy.py" /usr/local/bin/boy
 ok "Files ready  (boy available system-wide)"
 
 # ── 3. Secret key ─────────────────────────────────────────────
-SECRET=$(python3 -c "import secrets; print(secrets.token_hex(32))")
-sed -i "s/xui-monitor-2026-change-me/${SECRET}/" "${DIR}/dashboard.py"
-ok "Secret key generated"
+ok "Secret key will be auto-generated in app.db on first run"
 
 # ── 4. Systemd services ───────────────────────────────────────
 echo

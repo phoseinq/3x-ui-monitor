@@ -28,10 +28,7 @@ TRAFFIC_DB  = "/opt/xui-monitor/traffic.db"
 STATIC_DIR  = "/opt/xui-monitor/static"
 COOKIE_FILE = "/opt/xui-monitor/session.json"
 BACKUP_DIR  = "/opt/xui-monitor/deleted_backup"
-SECRET_KEY  = "xui-monitor-2026-change-me"
-
 app = Flask(__name__, static_folder=STATIC_DIR)
-app.secret_key = SECRET_KEY
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=30)
 
 def app_db():
@@ -98,6 +95,11 @@ def init_app_db():
             "INSERT OR IGNORE INTO settings(key,value) VALUES(?,?)",
             list(defaults.items()),
         )
+        row = c.execute("SELECT value FROM settings WHERE key='secret_key'").fetchone()
+        if not row:
+            import secrets as _sec
+            c.execute("INSERT INTO settings(key,value) VALUES('secret_key',?)",
+                      (_sec.token_hex(32),))
 
 def get_setting(key, default=None):
     with app_db() as c:
@@ -3251,6 +3253,9 @@ def api_panel_execute():
 
 if __name__ == "__main__":
     init_app_db()
+    with app_db() as _c:
+        _sk = _c.execute("SELECT value FROM settings WHERE key='secret_key'").fetchone()
+        app.secret_key = _sk["value"] if _sk else "xui-monitor-2026-fallback"
     _ensure_online_log()
     tls_en   = get_setting("tls_enabled", "0") == "1"
     tls_cert = get_setting("tls_cert", "").strip()
