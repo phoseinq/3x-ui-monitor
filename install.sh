@@ -95,6 +95,14 @@ _dl dashboard.py
 _dl monitor.py
 _dl boy.py
 
+# Chart.js (served locally — no CDN dependency at runtime)
+mkdir -p "${DIR}/static"
+info "Downloading Chart.js..."
+curl -fsSL "${CURL_PROXY[@]}" \
+  "https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" \
+  -o "${DIR}/static/chart.min.js" \
+  || warn "chart.min.js download failed — charts will not render"
+
 # strip UTF-8 BOM if present (Windows editors sometimes add it)
 python3 - << 'PY'
 import os, sys

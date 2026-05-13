@@ -166,28 +166,37 @@ def cmd_restart():
     print()
 
 def cmd_update():
-    import urllib.request, urllib.error
+    import urllib.request, urllib.error, os
     head("Update xui-monitor"); sep()
-    REPO = "https://raw.githubusercontent.com/phoseinq/3x-ui-monitor/main"
-    DIR  = "/opt/xui-monitor"
-    BOM  = b"\xef\xbb\xbf"
-    files = ["dashboard.py", "monitor.py", "boy.py"]
-    info("Downloading latest files from GitHub…")
-    for fn in files:
-        url  = f"{REPO}/{fn}"
-        dest = f"{DIR}/{fn}"
+    REPO     = "https://raw.githubusercontent.com/phoseinq/3x-ui-monitor/main"
+    CHART_JS = "https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"
+    DIR      = "/opt/xui-monitor"
+    BOM      = b"\xef\xbb\xbf"
+
+    def _dl(url, dest, strip_bom=False):
         try:
             with urllib.request.urlopen(url, timeout=15) as r:
                 data = r.read()
-            if data.startswith(BOM):
+            if strip_bom and data.startswith(BOM):
                 data = data[3:]
+            os.makedirs(os.path.dirname(dest), exist_ok=True)
             with open(dest, "wb") as f:
                 f.write(data)
-            ok(fn)
+            return True
         except urllib.error.URLError as e:
-            fail(f"Download failed ({fn}): {e}")
+            warn(f"Download failed: {e}"); return False
         except PermissionError:
             fail("Permission denied — run as root: sudo boy update")
+
+    info("Downloading latest files from GitHub…")
+    for fn in ["dashboard.py", "monitor.py", "boy.py"]:
+        if _dl(f"{REPO}/{fn}", f"{DIR}/{fn}", strip_bom=True):
+            ok(fn)
+
+    info("Updating Chart.js…")
+    if _dl(CHART_JS, f"{DIR}/static/chart.min.js"):
+        ok("static/chart.min.js")
+
     info("Restarting services…")
     _svc("restart", SVC_DASH)
     _svc("restart", SVC_MON)
