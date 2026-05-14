@@ -319,10 +319,8 @@ def total_hourly(hours=24, bucket_min=60):
             SELECT bucket, SUM(CASE WHEN delta > 0 THEN delta ELSE 0 END) AS total
             FROM (
                 SELECT (ts/:bkt)*:bkt AS bucket,
-                       email,
-                       MAX(total) - MIN(total) AS delta
+                       total - LAG(total, 1, total) OVER (PARTITION BY email ORDER BY ts) AS delta
                 FROM snapshots WHERE ts >= :since
-                GROUP BY bucket, email
             )
             GROUP BY bucket ORDER BY bucket
         """, {"bkt": bkt, "since": since}).fetchall()
@@ -334,28 +332,30 @@ def user_hourly(email, hours=24, bucket_min=30):
     bkt   = bucket_min * 60
     with traffic_db() as c:
         rows = c.execute("""
-            SELECT (ts/:bkt)*:bkt AS bucket, MAX(total)-MIN(total) AS delta
-            FROM snapshots WHERE ts>=:since AND email=:email
+            SELECT bucket, SUM(CASE WHEN delta > 0 THEN delta ELSE 0 END) AS delta
+            FROM (
+                SELECT (ts/:bkt)*:bkt AS bucket,
+                       total - LAG(total, 1, total) OVER (ORDER BY ts) AS delta
+                FROM snapshots WHERE ts>=:since AND email=:email
+            )
             GROUP BY bucket ORDER BY bucket
         """, {"bkt": bkt, "since": since, "email": email}).fetchall()
-    return [{"hour": iran_fmt(r["bucket"]), "bytes": max(r["delta"], 0),
-             "gb": round(max(r["delta"], 0) / 1024**3, 4)} for r in rows]
+    return [{"hour": iran_fmt(r["bucket"]), "bytes": r["delta"] or 0,
+             "gb": round((r["delta"] or 0) / 1024**3, 4)} for r in rows]
 
 def traffic_top_users(hours=24, limit=15):
     since = int(time.time()) - hours * 3600
-    bkt   = 3600
     with traffic_db() as c:
         rows = c.execute("""
-            SELECT email, SUM(CASE WHEN delta>0 THEN delta ELSE 0 END) AS total
+            SELECT email, SUM(CASE WHEN delta > 0 THEN delta ELSE 0 END) AS total
             FROM (
-                SELECT email, (ts/:bkt)*:bkt AS bucket,
-                       MAX(total)-MIN(total) AS delta
-                FROM snapshots WHERE ts>=:since
-                GROUP BY email, bucket
+                SELECT email,
+                       total - LAG(total, 1, total) OVER (PARTITION BY email ORDER BY ts) AS delta
+                FROM snapshots WHERE ts >= :since
             )
-            GROUP BY email HAVING total>0
+            GROUP BY email HAVING total > 0
             ORDER BY total DESC LIMIT :lim
-        """, {"bkt": bkt, "since": since, "lim": limit}).fetchall()
+        """, {"since": since, "lim": limit}).fetchall()
     return [{"email": r["email"], "bytes": int(r["total"] or 0),
              "gb": round((r["total"] or 0) / 1024**3, 4)} for r in rows]
 
