@@ -3,6 +3,10 @@
 # 3x-ui Monitor
 
 [![CI](https://github.com/phoseinq/3x-ui-monitor/actions/workflows/syntax-check.yml/badge.svg)](https://github.com/phoseinq/3x-ui-monitor/actions/workflows/syntax-check.yml)
+[![Python](https://img.shields.io/badge/Python-3.8%2B-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-web%20framework-000000?logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
+[![3x-ui](https://img.shields.io/badge/3x--ui-compatible-orange)](https://github.com/MHSanaei/3x-ui)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 
 **داشبورد مانیتورینگ ترافیک برای پنل‌های 3x-ui**
 
