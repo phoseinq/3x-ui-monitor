@@ -2773,8 +2773,17 @@ async function clearHistory(keepDays){
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({keep_days:keepDays})});
   const j=await r.json();
-  if(j.ok){toast(`Deleted ${j.deleted} rows.`);loadDbStats();}
-  else toast('Error: '+j.error,true);
+  if(!j.ok){toast('Error: '+j.error,true);return;}
+  toast('Cleanup started — this may take a few minutes on large databases…');
+  const poll=setInterval(async()=>{
+    const s=await fetch('/api/clear-history/status').then(x=>x.json()).catch(()=>null);
+    if(!s)return;
+    if(!s.running){
+      clearInterval(poll);
+      if(s.error)toast('Error: '+s.error,true);
+      else{toast(`Done — deleted ${s.deleted} rows.`);loadDbStats();}
+    }
+  },3000);
 }
 
 async function vacuumDb(){
@@ -3339,24 +3348,42 @@ def api_vacuum_db():
     except Exception as e:
         return jsonify({"ok": False, "error": str(e)}), 500
 
+_clear_history_state: dict = {"running": False, "deleted": 0, "error": None}
+
 @app.route("/api/clear-history", methods=["POST"])
 @require_login
 def api_clear_history():
+    if _clear_history_state["running"]:
+        return jsonify({"ok": False, "error": "Already running"}), 409
     data      = request.get_json() or {}
     keep_days = max(int(data.get("keep_days", 0)), 0)
-    try:
-        with traffic_db() as c:
-            if keep_days > 0:
-                cutoff  = int(time.time()) - keep_days * 86400
-                deleted = c.execute(
-                    "DELETE FROM snapshots WHERE ts < ?", (cutoff,)
-                ).rowcount
-            else:
-                deleted = c.execute("DELETE FROM snapshots").rowcount
-        _vacuum(TRAFFIC_DB)
-        return jsonify({"ok": True, "deleted": deleted})
-    except Exception as e:
-        return jsonify({"ok": False, "error": str(e)}), 500
+
+    def _do():
+        _clear_history_state.update({"running": True, "deleted": 0, "error": None})
+        try:
+            with traffic_db() as c:
+                if keep_days > 0:
+                    cutoff  = int(time.time()) - keep_days * 86400
+                    deleted = c.execute(
+                        "DELETE FROM snapshots WHERE ts < ?", (cutoff,)
+                    ).rowcount
+                else:
+                    deleted = c.execute("DELETE FROM snapshots").rowcount
+            _clear_history_state["deleted"] = deleted
+            _vacuum(TRAFFIC_DB)
+        except Exception as e:
+            _clear_history_state["error"] = str(e)
+            _log.warning("clear-history failed: %s", e)
+        finally:
+            _clear_history_state["running"] = False
+
+    threading.Thread(target=_do, daemon=True, name="clear-history").start()
+    return jsonify({"ok": True, "running": True})
+
+@app.route("/api/clear-history/status")
+@require_login
+def api_clear_history_status():
+    return jsonify(_clear_history_state)
 
 @app.route("/api/cleanup/panel-preview")
 @require_login
