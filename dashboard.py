@@ -1199,7 +1199,7 @@ function _showCleanupBar(deleted,total,phase){
     ${phase!=='compressing'?`<div style="font-size:.75rem;color:var(--muted);margin-top:6px;text-align:right">${pct}%</div>`:''}`;
   if(phase==='compressing'){
     const bar=document.getElementById('cleanup-bar');
-    if(bar){bar.style.background='#22c55e';bar.style.animation='pulse-bar 1.2s ease-in-out infinite';}
+    if(bar){bar.style.background='linear-gradient(90deg,#22c55e,#4f8ef7,#22c55e)';bar.style.backgroundSize='200% 100%';bar.style.animation='shimmer 1.5s linear infinite';}
   }
 }
 function _hideCleanupBar(){const el=document.getElementById('cleanup-progress-wrap');if(el)el.remove();}
