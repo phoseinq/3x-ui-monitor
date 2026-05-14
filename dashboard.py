@@ -3,6 +3,7 @@
 
 import csv
 import hashlib
+import logging
 import json
 import os
 import sqlite3
@@ -28,6 +29,9 @@ TRAFFIC_DB  = "/opt/xui-monitor/traffic.db"
 STATIC_DIR  = "/opt/xui-monitor/static"
 COOKIE_FILE = "/opt/xui-monitor/session.json"
 BACKUP_DIR  = "/opt/xui-monitor/deleted_backup"
+logging.basicConfig(level=logging.WARNING, format="%(asctime)s %(levelname)s %(message)s")
+_log = logging.getLogger(__name__)
+
 app = Flask(__name__, static_folder=STATIC_DIR)
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=30)
 app.config["SESSION_COOKIE_HTTPONLY"] = True
@@ -428,7 +432,8 @@ def fetch_online():
         except Exception:
             pass
         return count, emails
-    except Exception:
+    except Exception as _e:
+        _log.warning("fetch_online failed: %s", _e)
         _online_cache["ts"] = now
         return _online_cache["count"], _online_cache["emails"]
 
@@ -641,7 +646,8 @@ def fetch_server_stats() -> dict:
             _save_server_snapshot(obj)
             _server_cache["save_ts"] = now
         return obj
-    except Exception:
+    except Exception as _e:
+        _log.warning("fetch_server_status failed: %s", _e)
         _server_cache["ts"] = now
         return _server_cache["data"]
 
@@ -692,8 +698,8 @@ def _prune_loop():
             if now_local.hour == ch and _last_day[0] != today:
                 deleted = run_cleanup(days)
                 _last_day[0] = today
-        except Exception:
-            pass
+        except Exception as _e:
+            _log.warning("prune_loop error: %s", _e)
 
 threading.Thread(target=_prune_loop, daemon=True).start()
 
@@ -729,8 +735,8 @@ def _panel_cleanup_loop():
                         _log.getLogger(__name__).info("Panel cleanup backup saved: %s (%d users)", bp, len(aged))
                     for c in aged:
                         delete_panel_client(int(c["inbound_id"]), str(c["client_id"]))
-        except Exception:
-            pass
+        except Exception as _e:
+            _log.warning("panel_cleanup_loop error: %s", _e)
 
 threading.Thread(target=_panel_cleanup_loop, daemon=True, name="panel-cleanup").start()
 
@@ -764,7 +770,8 @@ def _panel_api(method: str, path: str, **kwargs):
                         continue
                 return None
             return data
-        except Exception:
+        except Exception as _e:
+            _log.warning("panel API %s %s failed: %s", method, path, _e)
             return None
     return None
 
@@ -1648,7 +1655,7 @@ async function loadPage(){
         :'<span class="badge b-ok">Active</span>';
       return`<tr onclick="location.href='/user/${encodeURIComponent(u.email)}'">
         <td style="color:var(--muted);font-size:.7rem">${start+i+1}</td>
-        <td style="font-weight:500">${u.email||'—'}</td>
+        <td style="font-weight:500">${escapeHtml(u.email||'—')}</td>
         <td class="col-desktop">${fmt(u.total)}</td>
         <td class="col-desktop">${u.quota>0?fmt(u.quota):'<span style="color:var(--muted)">—</span>'}</td>
         <td>${bar}</td>
@@ -1687,7 +1694,7 @@ function goPage(p){
 function renderRestarts(list){
   const el=document.getElementById('restarts');
   if(!list.length){el.innerHTML='<div class="empty">No restarts recorded</div>';return;}
-  el.innerHTML=list.map(r=>`<div class="log-row"><span class="log-ts">${r.time}</span><span class="log-reason">${r.reason}</span></div>`).join('');
+  el.innerHTML=list.map(r=>`<div class="log-row"><span class="log-ts">${escapeHtml(r.time)}</span><span class="log-reason">${escapeHtml(r.reason)}</span></div>`).join('');
 }
 
 async function refresh(){
@@ -1708,6 +1715,7 @@ async function refresh(){
 document.getElementById('countdown').textContent=_refreshSec;
 let _tChart=null,_tChartHours=0,_tHours=24,_uChart=null,_onlineChart=null,_onlineHours=24;
 
+function escapeHtml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 async function fetchJSON(url,retries=3,delay=2000){
   for(let i=0;i<retries;i++){
     try{
@@ -2015,7 +2023,7 @@ async function refreshTrafficChart(){
             const bar=`<div style="height:4px;border-radius:99px;background:#1a2840;width:100%;margin-top:3px"><div style="height:4px;border-radius:99px;background:${uColors[i%10]};width:${pct}%"></div></div>`;
             return`<tr onclick="location.href='/user/${encodeURIComponent(u.email)}'" style="cursor:pointer">
               <td style="color:var(--muted);font-size:.7rem">${i+1}</td>
-              <td style="font-weight:500">${u.email}</td>
+              <td style="font-weight:500">${escapeHtml(u.email)}</td>
               <td>${fmt(u.bytes)}</td>
               <td style="min-width:90px">${pct}%${bar}</td>
             </tr>`;
@@ -2044,7 +2052,7 @@ function renderOnlineUsers(users){
     const dur=u.duration_sec!=null?`<span style="font-size:.72rem;color:var(--muted);flex-shrink:0">${fmtDur(u.duration_sec)}</span>`:'';
     const rank=`<span style="font-size:.68rem;color:var(--muted);width:16px;text-align:right;flex-shrink:0">${i+1}</span>`;
     const email=u.email||u;
-    return`<a href="/user/${encodeURIComponent(email)}" class="online-user-row">${rank}<span class="online-pulse"></span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${email}</span>${dur}<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted);flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg></a>`;
+    return`<a href="/user/${encodeURIComponent(email)}" class="online-user-row">${rank}<span class="online-pulse"></span><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escapeHtml(email)}</span>${dur}<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--muted);flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg></a>`;
   }).join('');
 }
 

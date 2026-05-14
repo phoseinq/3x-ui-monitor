@@ -13,7 +13,8 @@
 #    curl -fsSL ... | sudo bash
 set -euo pipefail
 
-REPO_RAW="https://raw.githubusercontent.com/phoseinq/3x-ui-monitor/main"
+VERSION="v1.4.2"
+REPO_RAW="https://raw.githubusercontent.com/phoseinq/3x-ui-monitor/${VERSION}"
 DIR="/opt/xui-monitor"
 
 R=$'\033[0;31m'; G=$'\033[0;32m'; B=$'\033[0;34m'
