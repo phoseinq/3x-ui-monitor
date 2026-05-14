@@ -150,4 +150,54 @@ Fields: `email`, `client_id`, `subscription`, `tg_id`, `comment`, `quota_gb`, `u
 
 ---
 
+## Reverse proxy
+
+By default the dashboard listens on `http://0.0.0.0:5000`. If you want HTTPS on port 443 or need to run multiple services on one IP, put nginx in front.
+
+**nginx example:**
+
+```nginx
+server {
+    listen 443 ssl;
+    server_name your.domain.com;
+
+    ssl_certificate     /path/to/cert.pem;
+    ssl_certificate_key /path/to/key.pem;
+
+    location / {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+```
+
+Then restrict Flask to localhost only — edit `/etc/systemd/system/xui-dashboard.service`:
+
+```ini
+[Service]
+Environment=HOST=127.0.0.1
+ExecStart=/usr/bin/python3 /opt/xui-monitor/dashboard.py
+```
+
+Reload: `systemctl daemon-reload && systemctl restart xui-dashboard`
+
+> If you only need HTTPS without nginx, use `boy https on --cert /path/cert.pem --key /path/key.pem` — no reverse proxy needed.
+
+---
+
+## Log management
+
+Logs go to journald. To limit disk usage:
+
+```bash
+# keep only last 7 days
+journalctl --vacuum-time=7d
+
+# or cap by size
+journalctl --vacuum-size=100M
+```
+
+---
+
 MIT License
