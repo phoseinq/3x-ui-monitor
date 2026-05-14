@@ -30,6 +30,9 @@ COOKIE_FILE = "/opt/xui-monitor/session.json"
 BACKUP_DIR  = "/opt/xui-monitor/deleted_backup"
 app = Flask(__name__, static_folder=STATIC_DIR)
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=30)
+app.config["SESSION_COOKIE_HTTPONLY"] = True
+app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_SECURE"]   = False  # set True when TLS is enabled
 
 def app_db():
     c = sqlite3.connect(APP_DB)
@@ -2351,7 +2354,7 @@ __TOPBAR__
         <div class="form-group">
           <label class="crit">Password</label>
           <input name="panel_pass" type="password" value="__PANEL_PASS__">
-          <p class="field-desc">Admin password. Stored encrypted in app.db.</p>
+          <p class="field-desc">Admin password. Stored in app.db (file permissions: 600).</p>
         </div>
       </div>
     </div>
