@@ -63,4 +63,20 @@ curl -fsSL https://raw.githubusercontent.com/phoseinq/3x-ui-monitor/main/install
 
 **[Next: First run & settings →](SETUP.md)**
 
+---
+
+## Verified
+
+Tested on Ubuntu 22.04 VPS.
+
+CI checks on every push:
+- Python syntax (`compileall`)
+- Ruff E9/F rules
+- `bash -n` shell syntax
+- `shellcheck` static analysis
+
+All tracked files use LF line endings (`git ls-files --eol`).
+
+---
+
 MIT License
