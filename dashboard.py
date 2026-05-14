@@ -1635,9 +1635,9 @@ function renderRestarts(list){
 async function refresh(){
   try{
     const [summary,restarts,onlineData]=await Promise.all([
-      fetch('/api/summary').then(r=>r.json()),
-      fetch('/api/restarts').then(r=>r.json()),
-      fetch('/api/online').then(r=>r.json()).catch(()=>({count:0,emails:[]})),
+      fetchJSON('/api/summary'),
+      fetchJSON('/api/restarts'),
+      fetchJSON('/api/online').catch(()=>({count:0,emails:[]})),
     ]);
     _lastRestarts=restarts;
     _summary={...summary,online:onlineData.count};
@@ -1649,6 +1649,20 @@ async function refresh(){
 
 document.getElementById('countdown').textContent=_refreshSec;
 let _tChart=null,_tChartHours=0,_tHours=24,_uChart=null,_onlineChart=null,_onlineHours=24;
+
+async function fetchJSON(url,retries=3,delay=2000){
+  for(let i=0;i<retries;i++){
+    try{
+      const r=await fetch(url);
+      if(!r.ok)throw new Error(r.status);
+      return await r.json();
+    }catch(e){
+      if(i===retries-1)throw e;
+      await new Promise(res=>setTimeout(res,delay*(i+1)));
+    }
+  }
+}
+
 (()=>{const v=new URLSearchParams(location.search).get('v');if(v)openView(v);history.replaceState({},'','/');})();
 refresh();
 
@@ -1882,8 +1896,8 @@ async function refreshTrafficChart(){
     const hours=_tHours;
     const gran=hours<=24?60:hours<=168?360:1440;
     const [data,topUsers]=await Promise.all([
-      fetch(`/api/traffic/hourly?hours=${hours}&gran=${gran}`).then(r=>r.json()),
-      fetch(`/api/traffic/top-users?hours=${hours}&limit=15`).then(r=>r.json()),
+      fetchJSON(`/api/traffic/hourly?hours=${hours}&gran=${gran}`),
+      fetchJSON(`/api/traffic/top-users?hours=${hours}&limit=15`),
     ]);
     const labels=data.map(d=>d.hour);
     const values=data.map(d=>d.gb);
@@ -1978,7 +1992,7 @@ function renderOnlineUsers(users){
 
 async function refreshOnlineUsers(){
   try{
-    const d=await fetch('/api/online/durations').then(r=>r.json());
+    const d=await fetchJSON('/api/online/durations');
     _online={count:d.length,emails:d.map(u=>u.email)};
     _summary.online=d.length;
     renderOnlineUsers(d);
@@ -1997,7 +2011,7 @@ function setOnlineRange(h){
 }
 async function loadOnlineChart(){
   try{
-    const data=await fetch('/api/online/history?hours='+_onlineHours).then(r=>r.json());
+    const data=await fetchJSON('/api/online/history?hours='+_onlineHours);
     const rangeLabel=_onlineHours<=6?'6h':_onlineHours<=24?'24h':_onlineHours<=72?'3d':'7d';
     if(!data.length){
       document.getElementById('online-stats').innerHTML='<span style="font-size:.72rem;color:var(--muted)">Not enough data yet — check back in 30 min.</span>';
