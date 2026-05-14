@@ -940,6 +940,7 @@ button.sb-link{width:100%;background:none;border:none;cursor:pointer;text-align:
   box-shadow:0 0 6px var(--green);animation:pulse 2s infinite;flex-shrink:0}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 @keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse-bar{0%,100%{opacity:1}50%{opacity:.5}}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 .skel{background:linear-gradient(90deg,#0d172a 25%,#152236 50%,#0d172a 75%);
   background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:5px;display:inline-block}
@@ -2765,6 +2766,28 @@ async function loadDbStats(){
 }
 loadDbStats();
 
+function _showCleanupBar(deleted,total,phase){
+  let el=document.getElementById('cleanup-progress-wrap');
+  if(!el){
+    el=document.createElement('div');
+    el.id='cleanup-progress-wrap';
+    el.style.cssText='position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px 20px;min-width:300px;max-width:420px;z-index:9999;box-shadow:0 4px 24px #0006';
+    document.body.appendChild(el);
+  }
+  const pct=total>0?Math.min(100,Math.round(deleted/total*100)):0;
+  const phaseLabel=phase==='counting'?'Counting rows…':phase==='compressing'?'Compressing database…':`Deleting rows… ${deleted.toLocaleString()} / ${total.toLocaleString()}`;
+  el.innerHTML=`<div style="font-size:.8rem;color:var(--muted);margin-bottom:8px">${phaseLabel}</div>
+    <div style="background:var(--border);border-radius:99px;height:8px;overflow:hidden">
+      <div style="height:8px;border-radius:99px;background:#4f8ef7;transition:width .4s;width:${phase==='compressing'?100:pct}%" id="cleanup-bar"></div>
+    </div>
+    ${phase!=='compressing'?`<div style="font-size:.75rem;color:var(--muted);margin-top:6px;text-align:right">${pct}%</div>`:''}`;
+  if(phase==='compressing'){
+    const bar=document.getElementById('cleanup-bar');
+    if(bar){bar.style.background='#22c55e';bar.style.animation='pulse-bar 1.2s ease-in-out infinite';}
+  }
+}
+function _hideCleanupBar(){const el=document.getElementById('cleanup-progress-wrap');if(el)el.remove();}
+
 async function clearHistory(keepDays){
   const msg=keepDays===0?'Clear ALL traffic history? This cannot be undone.'
     :`Clear snapshots older than ${keepDays} day(s)?`;
@@ -2774,16 +2797,18 @@ async function clearHistory(keepDays){
     body:JSON.stringify({keep_days:keepDays})});
   const j=await r.json();
   if(!j.ok){toast('Error: '+j.error,true);return;}
-  toast('Cleanup started — this may take a few minutes on large databases…');
+  _showCleanupBar(0,0,'counting');
   const poll=setInterval(async()=>{
     const s=await fetch('/api/clear-history/status').then(x=>x.json()).catch(()=>null);
     if(!s)return;
+    _showCleanupBar(s.deleted,s.total,s.phase);
     if(!s.running){
       clearInterval(poll);
+      _hideCleanupBar();
       if(s.error)toast('Error: '+s.error,true);
-      else{toast(`Done — deleted ${s.deleted} rows.`);loadDbStats();}
+      else{toast(`Done — deleted ${s.deleted.toLocaleString()} rows.`);loadDbStats();}
     }
-  },3000);
+  },2000);
 }
 
 async function vacuumDb(){
@@ -3348,7 +3373,7 @@ def api_vacuum_db():
     except Exception as e:
         return jsonify({"ok": False, "error": str(e)}), 500
 
-_clear_history_state: dict = {"running": False, "deleted": 0, "error": None}
+_clear_history_state: dict = {"running": False, "deleted": 0, "total": 0, "phase": "idle", "error": None}
 
 @app.route("/api/clear-history", methods=["POST"])
 @require_login
@@ -3359,23 +3384,44 @@ def api_clear_history():
     keep_days = max(int(data.get("keep_days", 0)), 0)
 
     def _do():
-        _clear_history_state.update({"running": True, "deleted": 0, "error": None})
+        _clear_history_state.update({"running": True, "deleted": 0, "total": 0, "phase": "counting", "error": None})
         try:
             with traffic_db() as c:
                 if keep_days > 0:
-                    cutoff  = int(time.time()) - keep_days * 86400
-                    deleted = c.execute(
-                        "DELETE FROM snapshots WHERE ts < ?", (cutoff,)
-                    ).rowcount
+                    cutoff = int(time.time()) - keep_days * 86400
+                    total  = c.execute("SELECT COUNT(*) FROM snapshots WHERE ts < ?", (cutoff,)).fetchone()[0]
                 else:
-                    deleted = c.execute("DELETE FROM snapshots").rowcount
-            _clear_history_state["deleted"] = deleted
+                    cutoff = None
+                    total  = c.execute("SELECT COUNT(*) FROM snapshots").fetchone()[0]
+            _clear_history_state.update({"total": total, "phase": "deleting"})
+            chunk  = 50_000
+            deleted = 0
+            while True:
+                with traffic_db() as c:
+                    if cutoff is not None:
+                        n = c.execute(
+                            "DELETE FROM snapshots WHERE rowid IN "
+                            "(SELECT rowid FROM snapshots WHERE ts < ? LIMIT ?)",
+                            (cutoff, chunk)
+                        ).rowcount
+                    else:
+                        n = c.execute(
+                            "DELETE FROM snapshots WHERE rowid IN "
+                            "(SELECT rowid FROM snapshots LIMIT ?)",
+                            (chunk,)
+                        ).rowcount
+                deleted += n
+                _clear_history_state["deleted"] = deleted
+                if n < chunk:
+                    break
+            _clear_history_state["phase"] = "compressing"
             _vacuum(TRAFFIC_DB)
         except Exception as e:
             _clear_history_state["error"] = str(e)
             _log.warning("clear-history failed: %s", e)
         finally:
             _clear_history_state["running"] = False
+            _clear_history_state["phase"]   = "idle"
 
     threading.Thread(target=_do, daemon=True, name="clear-history").start()
     return jsonify({"ok": True, "running": True})
