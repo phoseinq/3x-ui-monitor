@@ -79,6 +79,40 @@ All tracked files use LF line endings (`git ls-files --eol`).
 
 ---
 
+## Reverse proxy (optional)
+
+To serve the dashboard on port 443 with nginx:
+
+```nginx
+server {
+    listen 443 ssl;
+    server_name your.domain.com;
+
+    ssl_certificate     /path/to/cert.pem;
+    ssl_certificate_key /path/to/key.pem;
+
+    location / {
+        proxy_pass http://127.0.0.1:5000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+```
+
+Then bind the dashboard to localhost only by editing `/etc/systemd/system/xui-dashboard.service` and setting `Environment=HOST=127.0.0.1` — or use `boy port 5000` and firewall the port externally.
+
+Logs are managed by journald. To limit disk usage:
+
+```bash
+# keep only last 7 days of logs
+journalctl --vacuum-time=7d
+
+# or cap by size
+journalctl --vacuum-size=100M
+```
+
+---
+
 ## Security notes
 
 - **Services run as root** — required to write to `/opt/xui-monitor` and restart services via `systemctl`. Intended for personal VPN servers where root access is already present.

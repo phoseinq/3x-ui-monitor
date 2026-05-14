@@ -31,6 +31,7 @@ COOKIE_FILE = "/opt/xui-monitor/session.json"
 BACKUP_DIR  = "/opt/xui-monitor/deleted_backup"
 logging.basicConfig(level=logging.WARNING, format="%(asctime)s %(levelname)s %(message)s")
 _log = logging.getLogger(__name__)
+_START_TS = time.time()
 
 app = Flask(__name__, static_folder=STATIC_DIR)
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(days=30)
@@ -3357,6 +3358,17 @@ def api_panel_preview():
     if err:
         return jsonify({"ok": False, "error": err}), 500
     return jsonify({"ok": True, "candidates": candidates})
+
+@app.route("/healthz")
+def healthz():
+    try:
+        with traffic_db() as c:
+            c.execute("SELECT 1").fetchone()
+        db_ok = True
+    except Exception:
+        db_ok = False
+    status = 200 if db_ok else 503
+    return jsonify({"ok": db_ok, "uptime": int(time.time() - _START_TS)}), status
 
 @app.route("/api/cleanup/panel-execute", methods=["POST"])
 @require_login
