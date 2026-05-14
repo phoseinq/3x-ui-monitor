@@ -1296,7 +1296,7 @@ __STYLE__</head><body>
     <div class="form-group"><label>Username</label>
       <input name="username" type="text" autocomplete="username" autofocus></div>
     <div class="form-group pw-field"><label>Password</label>
-      <input id="login-pw" name="password" type="password" autocomplete="current-password">
+      <input id="login-pw" name="password" type="password" autocomplete="current-password" onkeydown="if(event.key==='Enter'){event.preventDefault();document.getElementById('login-btn').click()}">
       <button type="button" class="pw-eye" onclick="togglePw('login-pw',this)" tabindex="-1"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button></div>
     <button class="submit-btn" id="login-btn" type="submit">Sign in</button>
   </form>
