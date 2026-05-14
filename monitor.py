@@ -43,7 +43,7 @@ def _load_cfg() -> dict:
     if now - _cfg_cache["ts"] < 60:
         return _cfg_cache["data"]
     try:
-        with sqlite3.connect(APP_DB) as c:
+        with sqlite3.connect(APP_DB, timeout=30) as c:
             rows = c.execute("SELECT key, value FROM settings").fetchall()
         data = {r[0]: r[1] for r in rows}
     except Exception:
@@ -62,7 +62,7 @@ def grace_bytes()    -> float: return max(0, int(_cfg("grace_mb") or 100)) * 102
 def reset_ratio()    -> float: return float(_cfg("reset_ratio") or 0.5)
 
 def init_db():
-    with sqlite3.connect(DB_FILE) as c:
+    with sqlite3.connect(DB_FILE, timeout=30) as c:
         c.execute("PRAGMA journal_mode=WAL")
         c.execute("""
             CREATE TABLE IF NOT EXISTS snapshots (
@@ -97,7 +97,7 @@ def init_db():
 
 def save_snapshot(rows: list[dict]):
     ts = int(time.time())
-    with sqlite3.connect(DB_FILE) as c:
+    with sqlite3.connect(DB_FILE, timeout=30) as c:
         c.executemany(
             "INSERT INTO snapshots(ts,email,up,down,total,quota,expired,enable) "
             "VALUES(?,?,?,?,?,?,?,?)",
@@ -106,15 +106,15 @@ def save_snapshot(rows: list[dict]):
         )
 
 def log_restart(reason: str):
-    with sqlite3.connect(DB_FILE) as c:
+    with sqlite3.connect(DB_FILE, timeout=30) as c:
         c.execute("INSERT INTO restarts(ts,reason) VALUES(?,?)", (int(time.time()), reason))
 
 def get_handled() -> set[str]:
-    with sqlite3.connect(DB_FILE) as c:
+    with sqlite3.connect(DB_FILE, timeout=30) as c:
         return {r[0] for r in c.execute("SELECT email FROM handled").fetchall()}
 
 def add_handled(clients: list[dict]):
-    with sqlite3.connect(DB_FILE) as c:
+    with sqlite3.connect(DB_FILE, timeout=30) as c:
         c.executemany(
             "INSERT OR REPLACE INTO handled(email, triggered_at, total_at_trigger) "
             "VALUES(?, unixepoch(), ?)",
@@ -134,7 +134,7 @@ def cleanup_handled(clients: list[dict]):
         and u["total"] < u["quota"] * ratio
     ]
     if renewed:
-        with sqlite3.connect(DB_FILE) as c:
+        with sqlite3.connect(DB_FILE, timeout=30) as c:
             c.executemany("DELETE FROM handled WHERE email=?", [(e,) for e in renewed])
         log.info("Renewed users removed from handled: %s", ", ".join(renewed))
 
