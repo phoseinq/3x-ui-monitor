@@ -1,4 +1,4 @@
-name: Syntax Check
+name: CI
 
 on:
   push:
@@ -17,12 +17,19 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Syntax check Python files
-        run: |
-          python3 -m py_compile dashboard.py
-          python3 -m py_compile monitor.py
-          python3 -m py_compile boy.py
-          echo "All files passed syntax check."
+      - name: Install tools
+        run: pip install ruff
 
-      - name: Check install.sh syntax
+      - name: Python syntax check
+        run: python3 -m compileall -q dashboard.py monitor.py boy.py
+
+      - name: Ruff lint
+        run: ruff check dashboard.py monitor.py boy.py --select E9,F63,F7,F82 --output-format github
+
+      - name: Shell syntax check
         run: bash -n install.sh && echo "install.sh OK"
+
+      - name: Shellcheck
+        run: |
+          sudo apt-get install -y shellcheck -q
+          shellcheck install.sh

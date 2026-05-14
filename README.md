@@ -2,6 +2,8 @@
 
 # 3x-ui Monitor
 
+[![CI](https://github.com/phoseinq/3x-ui-monitor/actions/workflows/syntax-check.yml/badge.svg)](https://github.com/phoseinq/3x-ui-monitor/actions/workflows/syntax-check.yml)
+
 **داشبورد مانیتورینگ ترافیک برای پنل‌های 3x-ui**
 
 <img width="2559" height="1363" alt="image" src="https://github.com/user-attachments/assets/d5eb19c3-1fe0-4d0a-98f8-18e47b9bf77b" />
